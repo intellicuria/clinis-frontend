@@ -1,0 +1,44 @@
+//
+@import "./_theme_rtl";
+@import "./_theme_colors";
+@import "./_theme_font";
+@import "./_theme_custom";
+@import "./_modules";
+@import "./header";
+
+@keyframes oscillate {
+
+  0%,
+  100% {
+    transform: rotate(-2deg);
+  }
+
+  50% {
+    transform: rotate(2deg);
+  }
+}
+
+@keyframes scale {
+
+  0%,
+  100% {
+    transform: scale(0.92);
+  }
+
+  50% {
+    transform: scale(0.95);
+  }
+
+}
+
+
+
+.animate-oscillate {
+  animation: oscillate 10s ease-in-out infinite;
+  scale: 1.25;
+}
+
+.animate-scale-person {
+  animation: scale 6s ease-in-out infinite;
+
+}

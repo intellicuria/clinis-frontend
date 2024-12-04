@@ -1,0 +1,19 @@
+.active-Item {
+    @apply text-gray-100 hover:text-white transition-all duration-300 ease-out
+}
+
+.parameter-name {
+    @apply font-semibold text-[16px]
+}
+
+.sub-parameter-name {
+    @apply font-normal text-[14px]
+}
+
+.parameter-value {
+    @apply lg:w-96 w-80
+}
+
+.section {
+    @apply flex lg:flex-row flex-col justify-between items-start lg:items-center py-4 border-b-[1px] gap-3 lg:gap-0
+}

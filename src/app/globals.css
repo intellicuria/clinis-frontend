@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@keyframes gradient-x {
+  0% {
+    background-position: 200% 0%;
+  }
+  100% {
+    background-position: -200% 0%;
+  }
+}
+
+.animate-gradient {
+  background-size: 200% 100%;
+  animation: gradient-x 5s infinite linear;
+}
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+}
+@keyframes typewriter {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+/* For Webkit-based browsers (Chrome, Safari and Opera) */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* For IE, Edge and Firefox */
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.animate-typewriter {
+  overflow: hidden;
+  border-right: 0.15em solid orange;
+  white-space: nowrap;
+  animation: typewriter 4s steps(44) infinite;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@layer components {
+  .main-container {
+    max-width: 1600px;
+    margin: 0 auto;
+  }
+}
+
+.animate-typewriter {
+  overflow: hidden;
+  border-right: 0.15em solid;
+  white-space: nowrap;
+  animation: typewriter 4s steps(50, end);
+}

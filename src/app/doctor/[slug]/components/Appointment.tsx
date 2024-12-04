@@ -1,0 +1,139 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
+import Button from "@/ui/Button/Button";
+import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/solid";
+import { getWorkspaces } from "@/lib/actions/BookingApiService";
+
+export default function Appointment({
+  setShowSlots,
+  doctorId,
+}: {
+  setShowSlots: (value: boolean) => void;
+  doctorId: string;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedOption, setSelectedOption] = useState<any>({
+    label: "– select –",
+    description: "",
+  });
+  const [workspaces, setWorkspaces] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const [timeSlots] = useState(["05:30 PM", "05:45 PM", "06:00 PM"]); // Sample time slots
+
+  // Fetch workspaces
+  useEffect(() => {
+    const fetchWorkspaces = async () => {
+      try {
+        const response = await getWorkspaces(doctorId);
+        if (response?.status) {
+          setWorkspaces(response.data);
+        } else {
+          console.error("Error fetching workspaces:", response?.message);
+        }
+      } catch (error) {
+        console.error("Error fetching workspaces:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchWorkspaces();
+  }, [doctorId]);
+
+  const toggleDropdown = () => setIsOpen(!isOpen);
+
+  const handleOptionClick = (option: any) => {
+    setSelectedOption(option);
+    setIsOpen(false);
+  };
+
+  if (loading) {
+    return <div>Loading workspaces...</div>;
+  }
+
+  return (
+    <div className="mx-auto p-5 rounded-lg">
+      <div className="flex flex-col justify-between">
+        <h1 className="text-2xl mb-5 font-semibold">Book an appointment</h1>
+        <Button pattern="primary" className="rounded-xl">
+          In-clinic
+        </Button>
+      </div>
+
+      <div className="relative mt-4">
+        <div
+          className="p-2 px-3 border border-primary-300 text-primary-600 rounded-lg flex justify-between items-center cursor-pointer focus:outline-none focus:ring-2 focus:ring-purple-500"
+          onClick={toggleDropdown}
+        >
+          <div>
+            <span className="font-semibold">{selectedOption.label}</span>
+            {selectedOption.description && (
+              <p className="text-sm text-primary-500 mt-1 line-clamp-1">
+                {selectedOption.description}
+              </p>
+            )}
+          </div>
+          {isOpen ? (
+            <ChevronUpIcon className="w-5 h-5 text-gray-500" />
+          ) : (
+            <ChevronDownIcon className="w-5 h-5 text-gray-500" />
+          )}
+        </div>
+
+        {isOpen && (
+          <div className="absolute top-full mt-1 max-h-[50vh] overflow-y-auto w-full bg-white border overflow-hidden border-gray-300 rounded-lg shadow-lg z-10">
+            {workspaces.map((workspace) => (
+              <div
+                key={workspace.id}
+                className="p-2 cursor-pointer hover:bg-primary-100"
+                onClick={() =>
+                  handleOptionClick({
+                    label: workspace.name,
+                    description: workspace.about,
+                  })
+                }
+              >
+                <span className="font-semibold">{workspace.name}</span>
+                <p className="text-sm text-gray-500 line-clamp-1">
+                  {workspace.about}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Time slots display */}
+      <div className="mt-6 p-3 rounded-md bg-primary-50">
+        <h1 className="text-sm">Select Service</h1>
+        <div className="mt-2 p-4 border flex flex-col gap-4 rounded-lg bg-white">
+          <h2 className="text-xs font-medium text-green-600">
+            SLOTS AVAILABLE 08 NOV '24, TODAY
+          </h2>
+          <div className="grid grid-cols-3 gap-4">
+            {timeSlots.map((time, index) => (
+              <Button
+                sizeClass="!text-base px-2 py-2"
+                key={index}
+                pattern="twoTone"
+                className="rounded-sm"
+              >
+                {time}
+              </Button>
+            ))}
+          </div>
+          <Button
+            pattern="primary"
+            className="w-full rounded-lg"
+            onClick={() => setShowSlots(true)}
+            sizeClass="py-2 !text-sm"
+          >
+            See all slots
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
