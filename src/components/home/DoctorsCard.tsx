@@ -20,11 +20,12 @@ const OrganizationsCard: FC<CardAuthorBox2Props> = ({
     experience_year,
     speciality,
     consultation_fee,
+    user_name,
     designation,
   } = doctor;
   return (
     <Link
-      href="/"
+      href={`/doctor/${user_name}`}
       className={`nc-CardAuthorBox2 flex flex-col overflow-hidden bg-white dark:bg-neutral-800 rounded-3xl ${className}`}
     >
       <div className="relative flex-shrink-0 ">
@@ -60,7 +61,7 @@ const OrganizationsCard: FC<CardAuthorBox2Props> = ({
           <span
             className={`block mt-1 text-sm text-neutral-500 dark:text-neutral-400`}
           >
-            @{designation}
+            @{user_name ? user_name : "-"}
           </span>
         </div>
       </div>

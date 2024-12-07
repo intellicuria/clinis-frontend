@@ -3,21 +3,29 @@
 import React, { useState, useEffect } from "react";
 import Button from "@/ui/Button/Button";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/solid";
-import { getWorkspaces } from "@/lib/actions/BookingApiService";
+import { getWorkspaces, getSlots } from "@/lib/actions/BookingApiService";
 
 export default function Appointment({
   setShowSlots,
-  doctorId,
+  username,
+  setWorkspaces,
+  workspaces,
+  doctorData,
+  setSelectedOption,
+  selectedOption,
 }: {
   setShowSlots: (value: boolean) => void;
-  doctorId: string;
+  username: string;
+  setWorkspaces: any;
+  workspaces: any;
+  doctorData: any;
+  setSelectedOption: any;
+  selectedOption: any;
 }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState<any>({
-    label: "– select –",
-    description: "",
-  });
-  const [workspaces, setWorkspaces] = useState<any[]>([]);
+
+  const [slots, setSlots] = useState<any[]>([]);
+  const [loadingSlots, setLoadingSlots] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const [timeSlots] = useState(["05:30 PM", "05:45 PM", "06:00 PM"]); // Sample time slots
@@ -26,7 +34,7 @@ export default function Appointment({
   useEffect(() => {
     const fetchWorkspaces = async () => {
       try {
-        const response = await getWorkspaces(doctorId);
+        const response = await getWorkspaces(username);
         if (response?.status) {
           setWorkspaces(response.data);
         } else {
@@ -40,12 +48,43 @@ export default function Appointment({
     };
 
     fetchWorkspaces();
-  }, [doctorId]);
+  }, [username]);
+  useEffect(() => {
+    const fetchWorkspaces = async () => {
+      console.log(doctorData, selectedOption);
+      if (!doctorData.id) {
+        return;
+      }
+
+      const today = new Date();
+      const isoDate = today.toISOString().split("T")[0] + "T00:00:00.000Z";
+
+      try {
+        setLoadingSlots(true);
+        const body = { date: isoDate };
+        const response = await getSlots(
+          doctorData.id,
+          selectedOption.value,
+          body
+        );
+        console.log(response);
+        setSlots(response.data);
+      } catch (error) {
+        console.error("Error fetching workspaces:", error);
+      } finally {
+        setLoadingSlots(false);
+        // Perform cleanup if needed
+      }
+    };
+
+    fetchWorkspaces();
+  }, [doctorData, selectedOption]);
 
   const toggleDropdown = () => setIsOpen(!isOpen);
 
   const handleOptionClick = (option: any) => {
     setSelectedOption(option);
+    console.log(option);
     setIsOpen(false);
   };
 
@@ -92,6 +131,7 @@ export default function Appointment({
                   handleOptionClick({
                     label: workspace.name,
                     description: workspace.about,
+                    value: workspace?.id,
                   })
                 }
               >
@@ -106,34 +146,47 @@ export default function Appointment({
       </div>
 
       {/* Time slots display */}
-      <div className="mt-6 p-3 rounded-md bg-primary-50">
-        <h1 className="text-sm">Select Service</h1>
-        <div className="mt-2 p-4 border flex flex-col gap-4 rounded-lg bg-white">
-          <h2 className="text-xs font-medium text-green-600">
-            SLOTS AVAILABLE 08 NOV '24, TODAY
-          </h2>
-          <div className="grid grid-cols-3 gap-4">
-            {timeSlots.map((time, index) => (
-              <Button
-                sizeClass="!text-base px-2 py-2"
-                key={index}
-                pattern="twoTone"
-                className="rounded-sm"
-              >
-                {time}
-              </Button>
-            ))}
+      {loadingSlots ? (
+        <div>Loading slots...</div>
+      ) : slots.length > 0 ? (
+        <div className="mt-6 p-3 rounded-md bg-primary-50">
+          <h1 className="text-sm">Select Service</h1>
+          <div className="mt-2 p-4 border flex flex-col gap-4 rounded-lg bg-white">
+            <h2 className="text-xs font-medium text-green-600">
+              SLOTS AVAILABLE{" "}
+              {new Date()
+                .toLocaleDateString("en-US", {
+                  day: "2-digit",
+                  month: "short",
+                  year: "numeric",
+                })
+                .toUpperCase()}
+            </h2>
+            <div className="grid grid-cols-3 gap-4">
+              {slots.map((slot) => (
+                <Button
+                  sizeClass="!text-base px-2 py-2"
+                  key={slot.id}
+                  pattern="twoTone"
+                  className="rounded-sm"
+                >
+                  {`${slot.from} `}
+                </Button>
+              ))}
+            </div>
+            <Button
+              pattern="primary"
+              className="w-full rounded-lg"
+              onClick={() => setShowSlots(true)}
+              sizeClass="py-2 !text-sm"
+            >
+              See all slots
+            </Button>
           </div>
-          <Button
-            pattern="primary"
-            className="w-full rounded-lg"
-            onClick={() => setShowSlots(true)}
-            sizeClass="py-2 !text-sm"
-          >
-            See all slots
-          </Button>
         </div>
-      </div>
+      ) : (
+        <div>No slots available for today.</div>
+      )}
     </div>
   );
 }

@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import ButtonPrimary from "@/ui/Button/ButtonPrimary";
 import { getDoctor } from "@/lib/actions/BookingApiService";
 interface DoctorProfileProps {
-  doctorId: string; // Doctor ID passed from the parent component
+  username: string | null; // Doctor ID passed from the parent component
+  doctorData: any;
+  setDoctorData: any;
 }
 
 // Define the API response structure
@@ -22,17 +24,17 @@ interface DoctorData {
   designation: string;
 }
 
-
-
-const DoctorProfile: React.FC<DoctorProfileProps> = ({ doctorId }) => {
-  const [doctorData, setDoctorData] = useState<DoctorData | null>(null);
-
+const DoctorProfile: React.FC<DoctorProfileProps> = ({
+  username,
+  doctorData,
+  setDoctorData,
+}) => {
   useEffect(() => {
     // Fetch doctor details using the provided `getDoctor` function
     const fetchDoctorDetails = async () => {
       try {
         const response = await getDoctor<{ status: boolean; data: DoctorData }>(
-          doctorId
+          username
         );
         if (response.status) {
           setDoctorData(response.data);
@@ -43,7 +45,7 @@ const DoctorProfile: React.FC<DoctorProfileProps> = ({ doctorId }) => {
     };
 
     fetchDoctorDetails();
-  }, [doctorId]);
+  }, [username]);
 
   if (!doctorData) {
     return <div>Loading...</div>;
@@ -71,7 +73,7 @@ const DoctorProfile: React.FC<DoctorProfileProps> = ({ doctorId }) => {
             </p>
           </div>
         </div>
-        <ButtonPrimary>Connect on Eka Care</ButtonPrimary>
+        <ButtonPrimary>Connect </ButtonPrimary>
       </div>
 
       {/* Experience & Languages */}

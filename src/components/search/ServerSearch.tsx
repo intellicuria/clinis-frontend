@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Search from "./Search";
-import { getAllCategories } from "@/lib/actions/module.action";
 import { Response, ModuleCategory } from "@/types/module.types";
-import { getModules } from "@/lib/actions/sever";
 import { ModuleInformation } from "@/types/module.types";
 
 export default function ServerSearch({ open, setOpen }) {
@@ -10,19 +8,7 @@ export default function ServerSearch({ open, setOpen }) {
   const [catgories, setCategories] = useState(null);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const ModuleResponse = await getModules<
-        Response<{ modules: ModuleInformation[]; totalCount: number }>
-      >({ page: 1, pageSize: 100 });
-      console.log(ModuleResponse);
-      const CategoryResponse = await getAllCategories<
-        Response<ModuleCategory[]>
-      >();
-      console.log(CategoryResponse);
-      setCategories(CategoryResponse?.data);
-
-      setModuleData(ModuleResponse.data.modules);
-    };
+    const fetchData = async () => {};
 
     fetchData();
 
