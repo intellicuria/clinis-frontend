@@ -1,9 +1,18 @@
 "use client";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 import Button from "@/ui/Button/Button";
+import { getSlots } from "@/lib/actions/BookingApiService";
 
-export default function AllSlots({ setShowSlots }: { setShowSlots: any }) {
+export default function AllSlots({
+  setShowSlots,
+  doctorData,
+  selectedOption,
+}: {
+  setShowSlots: any;
+  doctorData: any;
+  selectedOption: any;
+}) {
   const today = new Date();
   const [selectedDay, setSelectedDay] = useState({
     dayName: today.toLocaleString("en-US", { weekday: "short" }),
@@ -11,10 +20,43 @@ export default function AllSlots({ setShowSlots }: { setShowSlots: any }) {
     date: today,
   });
 
+  const [slots, setSlots] = useState<any[]>([]);
+  const [loadingSlots, setLoadingSlots] = useState(false);
+
+  useEffect(() => {
+    const fetchSlots = async () => {
+      if (!doctorData.id || !selectedOption.value) {
+        return;
+      }
+
+      const correctedDate = new Date(selectedDay.date);
+      correctedDate.setHours(0, 0, 0, 0); // Set time to midnight local time
+      const isoDate = correctedDate.toISOString();
+      console.log(isoDate);
+
+      try {
+        setLoadingSlots(true);
+        const body = { date: isoDate };
+        const response = await getSlots(
+          doctorData.id,
+          selectedOption.value,
+          body
+        );
+        console.log(response);
+        setSlots(response.data);
+      } catch (error) {
+        console.error("Error fetching slots:", error);
+      } finally {
+        setLoadingSlots(false);
+      }
+    };
+
+    fetchSlots();
+  }, [doctorData, selectedOption, selectedDay]);
+
   const daysContainerRef = useRef(null);
 
-  // Helper function to get the days starting from today to the end of the current month
-  const getDaysInMonthFromToday = (month, year) => {
+  const getDaysInMonthFromToday = (month: any, year: any) => {
     const days = [];
     const startDay =
       month === today.getMonth() && year === today.getFullYear()
@@ -45,7 +87,8 @@ export default function AllSlots({ setShowSlots }: { setShowSlots: any }) {
     }
   };
 
-  const handleDayClick = (day) => {
+  const handleDayClick = (day: any) => {
+    console.log(day);
     setSelectedDay(day);
   };
 
@@ -53,12 +96,6 @@ export default function AllSlots({ setShowSlots }: { setShowSlots: any }) {
     today.getMonth(),
     today.getFullYear()
   );
-  const [timeSlots] = useState([
-    "05:30 PM",
-    "05:45 PM",
-    "06:00 PM",
-    "07:00 PM",
-  ]); // Sample time slots
 
   return (
     <div className="mx-auto p-5 rounded-lg">
@@ -109,17 +146,6 @@ export default function AllSlots({ setShowSlots }: { setShowSlots: any }) {
               }`}
               onClick={() => handleDayClick(day)}
             >
-              {selectedDay &&
-                selectedDay.dayNumber === day.dayNumber &&
-                selectedDay.dayName === day.dayName && (
-                  <>
-                    <span className="flex h-3 w-3 absolute -top-1 -right-1">
-                      <span className="animate-ping absolute group-hover:opacity-75 opacity-0 inline-flex h-full w-full rounded-full bg-primary-400 "></span>
-                      <span className="relative inline-flex rounded-full h-3 w-3 bg-primary-100"></span>
-                    </span>
-                  </>
-                )}
-
               <div className="flex items-center px-4 py-4">
                 <div className="text-center">
                   <p
@@ -159,33 +185,30 @@ export default function AllSlots({ setShowSlots }: { setShowSlots: any }) {
         </button>
       </div>
       <div className="mt-5 flex flex-col gap-4 rounded-lg">
-        <h2 className="text-base font-medium uppercase">MORNING</h2>
+        <h2 className="text-base font-medium uppercase">
+          {loadingSlots ? "Loading Slots..." : "Available Slots"}
+        </h2>
         <div className="grid grid-cols-3 gap-4">
-          {timeSlots.map((time, index) => (
-            <Button
-              sizeClass="!text-base px-2 py-2"
-              key={index}
-              pattern="twoTone"
-              className="rounded-sm"
-            >
-              {time}
-            </Button>
-          ))}
+          {slots.length > 0 ? (
+            slots.map((slot: any, index: number) => (
+              <Button
+                sizeClass="!text-base px-2 py-2"
+                key={index}
+                pattern="twoTone"
+                className="rounded-sm"
+              >
+                {`${slot.from} `}{" "}
+              </Button>
+            ))
+          ) : (
+            <p className="col-span-3 text-gray-500">No slots available</p>
+          )}
         </div>
-        <h2 className="text-base font-medium   uppercase">AFTERNOON</h2>
-        <div className="grid grid-cols-3 gap-4">
-          {timeSlots.map((time, index) => (
-            <Button
-              sizeClass="!text-base px-2 py-2"
-              key={index}
-              pattern="twoTone"
-              className="rounded-sm"
-            >
-              {time}
-            </Button>
-          ))}
-        </div>
-        <Button disabled={true} pattern="primary" className="rounded-sm">
+        <Button
+          disabled={!slots.length}
+          pattern="primary"
+          className="rounded-sm"
+        >
           Book Appointment
         </Button>
       </div>

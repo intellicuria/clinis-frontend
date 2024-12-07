@@ -100,10 +100,6 @@ const PageSearch = ({}) => {
     fetchDoctorDetails();
   }, []);
 
-  if (!doctorData) {
-    return <div>Loading...</div>;
-  }
-
   return (
     <div className={`nc-PageSearch`}>
       {/* HEADER */}
@@ -216,32 +212,37 @@ const PageSearch = ({}) => {
             </div>
           </div>
 
-          {/* LOOP ITEMS */}
-          {/* LOOP ITEMS Doctors */}
-          {tabActive === "Doctors" && (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 md:gap-8 mt-8 lg:mt-10">
-              {doctorData.map((doctor, index) => (
-                <DoctorsCard key={index} doctor={doctor} />
-              ))}
+          {!doctorData ? (
+            <div className="m-20 w-full h-full justify-center items-center flex">
+              Loading...
             </div>
-          )}
-
-          {/* LOOP ITEMS POSTS */}
-          {tabActive === "Clinics" && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-5 md:gap-8 mt-8 lg:mt-10">
-              {orgData?.map((org, index) => (
-                <OrganizationsCard key={index} org={org} />
-              ))}
-            </div>
-          )}
-
-          {/* LOOP ITEMS TAGS */}
-          {tabActive === "Specialization" && (
-            <div className="flex flex-wrap mt-12 ">
-              {tags.map((tag) => (
-                <Tag className="mb-3 mr-3" key={tag.id} tag={tag} />
-              ))}
-            </div>
+          ) : (
+            <>
+              {/* LOOP ITEMS Doctors */}
+              {tabActive === "Doctors" && (
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 md:gap-8 mt-8 lg:mt-10">
+                  {doctorData.map((doctor, index) => (
+                    <DoctorsCard key={index} doctor={doctor} />
+                  ))}
+                </div>
+              )}
+              {/* LOOP ITEMS POSTS */}
+              {tabActive === "Clinics" && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-5 md:gap-8 mt-8 lg:mt-10">
+                  {orgData?.map((org, index) => (
+                    <OrganizationsCard key={index} org={org} />
+                  ))}
+                </div>
+              )}
+              {/* LOOP ITEMS TAGS */}
+              {tabActive === "Specialization" && (
+                <div className="flex flex-wrap mt-12 ">
+                  {tags.map((tag) => (
+                    <Tag className="mb-3 mr-3" key={tag.id} tag={tag} />
+                  ))}
+                </div>
+              )}
+            </>
           )}
 
           {/* PAGINATION */}
