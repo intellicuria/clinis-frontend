@@ -23,7 +23,7 @@ export default function Page() {
             className="col-span-8 p-3 overflow-y-auto scrollbar-hide max-h-screen"
             style={{ paddingBottom: "10vh" }}
           >
-            <DoctorProfile organizationId="1"/>
+            <DoctorProfile organizationId="1" />
           </div>
 
           {/* Appointment/Slots/Book Appointment section */}
@@ -32,17 +32,17 @@ export default function Page() {
               {showBookAppointment ? (
                 <BookAppointment setShowConfirmation={setShowConfirmation} />
               ) : showSlots ? (
-                <AllSlots 
-                doctorId="3" 
-                workspaceId = "2"
-                  setShowSlots={setShowSlots} 
-                  navigateToBookAppointment={setShowBookAppointment} 
+                <AllSlots
+                  doctorId="3"
+                  workspaceId="2"
+                  setShowSlots={setShowSlots}
+                  navigateToBookAppointment={setShowBookAppointment}
                 />
               ) : (
                 <Appointment
-                  organizationId="1" 
+                  organizationId="1"
                   setShowSlots={setShowSlots}
-                  navigateToBookAppointment={setShowBookAppointment} 
+                  navigateToBookAppointment={setShowBookAppointment}
                 />
               )}
             </div>

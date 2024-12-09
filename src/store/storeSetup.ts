@@ -41,6 +41,7 @@ const store: CustomStore = configureStore({
       immutableCheck: false,
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+        ignorePaths: ["visit.data.importedFiles.0"],
       },
     }).concat(middlewares),
   devTools: process.env.NODE_ENV === "development",

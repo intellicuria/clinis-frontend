@@ -1,7 +1,7 @@
 "use client";
 
-import React, { FC } from "react";
-import { Fragment, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
+import { Fragment } from "react";
 import { Listbox, Transition } from "@/app/headlessui";
 import { CheckIcon, ChevronDownIcon } from "@heroicons/react/24/solid";
 import Button from "../Button/Button";
@@ -9,16 +9,42 @@ import Button from "../Button/Button";
 export interface ArchiveFilterListBoxProps {
   className?: string;
   lists: { name: string }[];
+  defaultValue?: string; // New prop for default value
+  onChange?: (location: string) => void;
 }
 
 const ArchiveFilterListBox: FC<ArchiveFilterListBoxProps> = ({
   className = "",
   lists,
+  defaultValue,
+  onChange,
 }) => {
-  const [selected, setSelected] = useState(lists[0]);
+  const [selected, setSelected] = useState(
+    defaultValue
+      ? lists.find((item) => item.name === defaultValue) || lists[0]
+      : lists[0]
+  );
+
+  const handleChange = (value: { name: string }) => {
+    setSelected(value);
+    if (onChange) {
+      onChange(value.name); // Notify parent about the change
+    }
+  };
+
+  useEffect(() => {
+    // Sync selected state if defaultValue changes
+    if (defaultValue) {
+      const defaultItem = lists.find((item) => item.name === defaultValue);
+      if (defaultItem) {
+        setSelected(defaultItem);
+      }
+    }
+  }, [defaultValue, lists]);
+
   return (
     <div className={`nc-ArchiveFilterListBox flex-shrink-0 ${className}`}>
-      <Listbox value={selected} onChange={setSelected}>
+      <Listbox value={selected} onChange={handleChange}>
         <div className="relative">
           <Listbox.Button as={"div"}>
             <Button pattern="third" fontSize="text-sm font-medium">
@@ -36,7 +62,7 @@ const ArchiveFilterListBox: FC<ArchiveFilterListBoxProps> = ({
             leaveTo="opacity-0"
           >
             <Listbox.Options className="absolute right-0 w-52 py-1 mt-2 overflow-auto text-sm text-neutral-900 dark:text-neutral-200 bg-white rounded-xl shadow-lg max-h-60 ring-1 ring-black ring-opacity-5 focus:outline-none dark:bg-neutral-900 dark:ring-neutral-700 z-50">
-              {lists.map((item, index: number) => (
+              {lists.map((item, index) => (
                 <Listbox.Option
                   key={index}
                   className={({ active }) =>

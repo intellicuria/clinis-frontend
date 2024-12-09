@@ -1,9 +1,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { DEMO_POSTS } from "@/data/posts";
-import { PostDataType } from "@/data/types";
-import { DEMO_AUTHORS } from "@/data/authors";
 import { DEMO_CATEGORIES } from "@/data/taxonomies";
 import Pagination from "@/ui/Pagination/Pagination";
 import ButtonPrimary from "@/ui/Button/ButtonPrimary";
@@ -11,28 +8,20 @@ import Nav from "@/ui/Nav/Nav";
 import NavItem from "@/ui/NavItem/NavItem";
 import ArchiveFilterListBox from "@/ui/ArchiveFilterListBox/ArchiveFilterListBox";
 import Input from "@/ui/Input/Input";
-import SectionSubscribe2 from "@/ui/SectionSubscribe2/SectionSubscribe2";
 import NcImage from "@/ui/NcImage/NcImage";
-import NcLink from "@/ui/NcLink/NcLink";
-import SectionSliderNewAuthors from "@/ui/SectionSliderNewAthors/SectionSliderNewAuthors";
-import ButtonSecondary from "@/ui/Button/ButtonSecondary";
-import SectionGridCategoryBox from "@/ui/SectionGridCategoryBox/SectionGridCategoryBox";
-import BackgroundSection from "@/ui/BackgroundSection/BackgroundSection";
 import DoctorsCard from "@/components/home/DoctorsCard";
 import ButtonCircle from "@/ui/Button/ButtonCircle";
 import OrganizationsCard from "@/components/home/OrganizationsCard";
 import Tag from "@/ui/Tag/Tag";
-import CardAuthorBox2 from "@/ui/CardAuthorBox2/CardAuthorBox2";
 import { ArrowRightIcon } from "@heroicons/react/24/solid";
 import {
   getAllDoctor,
   getAllOrganizations,
 } from "@/lib/actions/BookingApiService";
+import { useRouter } from "next/navigation";
+import { useAppSelector } from "@/store";
 
-const posts: PostDataType[] = DEMO_POSTS.filter((_, i) => i < 12);
-const cats = DEMO_CATEGORIES.filter((_, i) => i < 15);
 const tags = DEMO_CATEGORIES.filter((_, i) => i < 32);
-const authors = DEMO_AUTHORS.filter((_, i) => i < 12);
 
 const FILTERS = [
   { name: "Most Recent" },
@@ -41,6 +30,7 @@ const FILTERS = [
   { name: "Most Discussed" },
   { name: "Most Viewed" },
 ];
+
 interface DoctorData {
   name: string;
   experience_year: number;
@@ -59,9 +49,12 @@ interface DoctorData {
 const TABS = ["Doctors", "Clinics", "Specialization"];
 
 const PageSearch = ({}) => {
-  let s = "Technology";
+  const { location } = useAppSelector((state) => state.auth.user);
 
   const [tabActive, setTabActive] = useState(TABS[0]);
+
+  const router = useRouter();
+  const [searchTextValue, setSearchTextValue] = useState("");
 
   const handleClickTab = (item: string) => {
     if (item === tabActive) {
@@ -100,6 +93,17 @@ const PageSearch = ({}) => {
     fetchDoctorDetails();
   }, []);
 
+  const handleFormSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    console.log("Form submitted");
+    if (searchTextValue.trim()) {
+      router.push(
+        `/search?text=${encodeURIComponent(
+          searchTextValue.trim()
+        )}&location=${location}`
+      );
+    }
+  };
   return (
     <div className={`nc-PageSearch`}>
       {/* HEADER */}
@@ -116,72 +120,56 @@ const PageSearch = ({}) => {
         </div>
         {/* CONTENT */}
         <div className="relative container -mt-20 lg:-mt-48">
-          <div className=" bg-white dark:bg-neutral-900 dark:border dark:border-neutral-700 p-5 lg:p-16 rounded-[40px] shadow-2xl flex items-center">
+          <div className=" bg-white dark:bg-neutral-900 dark:border dark:border-neutral-700 p-5 lg:p-16  rounded-2xl md:rounded-[40px] shadow-2xl flex items-center">
             <header className="w-full max-w-3xl mx-auto text-center flex flex-col items-center">
-              <h2 className="text-2xl sm:text-4xl font-semibold">{s}</h2>
-              <span className="block text-xs sm:text-sm mt-4 text-neutral-500 dark:text-neutral-300">
-                We found{" "}
-                <strong className="font-medium text-neutral-800 dark:text-neutral-100">
-                  1135
-                </strong>{" "}
-                results for{" "}
-                <strong className="font-medium text-neutral-800 dark:text-neutral-100">
-                  {s}
-                </strong>
-              </span>
+              <h3 className="text-xl md:text-3xl text-gray-600 font-semibold">
+                Search Doctors and Clinics
+              </h3>
               <form
-                className="relative w-full mt-8 sm:mt-11 text-left"
-                method="post"
+                className=" w-full flex md:flex-row flex-col items-center justify-center gap-3 mt-2 md:mt-8 text-left"
+                onSubmit={handleFormSubmit}
               >
-                <label
-                  htmlFor="search-input"
-                  className="text-neutral-500 dark:text-neutral-300"
-                >
-                  <span className="sr-only">Search all icons</span>
-                  <Input
-                    id="search-input"
-                    type="search"
-                    placeholder="Type and press enter"
-                    sizeClass="pl-14 py-5 pe-5 md:ps-16"
-                    defaultValue={s}
-                  />
-                  <ButtonCircle
-                    className="absolute end-2.5 top-1/2 transform -translate-y-1/2"
-                    size=" w-11 h-11"
-                    type="submit"
+                <div className="relative w-full md:w-2/3">
+                  <label
+                    htmlFor="search-input"
+                    className="text-neutral-500 dark:text-neutral-300"
                   >
-                    <ArrowRightIcon className="w-5 h-5 rtl:rotate-180" />
-                  </ButtonCircle>
-                  <span className="absolute start-5 top-1/2 transform -translate-y-1/2 text-2xl md:start-6">
-                    <svg width="24" height="24" fill="none" viewBox="0 0 24 24">
-                      <path
-                        stroke="currentColor"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="1.5"
-                        d="M19.25 19.25L15.5 15.5M4.75 11C4.75 7.54822 7.54822 4.75 11 4.75C14.4518 4.75 17.25 7.54822 17.25 11C17.25 14.4518 14.4518 17.25 11 17.25C7.54822 17.25 4.75 14.4518 4.75 11Z"
-                      ></path>
-                    </svg>
-                  </span>
-                </label>
-              </form>
-              <div className="w-full text-sm text-start mt-4 text-neutral-500 dark:text-neutral-300">
-                <div className="inline-block space-x-1.5 sm:space-x-2.5 rtl:space-x-reverse">
-                  <span className="">Related:</span>
-                  <NcLink className="inline-block font-normal" href="/search">
-                    Delhi
-                  </NcLink>
-                  <NcLink className="inline-block font-normal" href="/search">
-                    Pune
-                  </NcLink>
-                  <NcLink className="inline-block font-normal" href="/search">
-                    Banglore
-                  </NcLink>
-                  <NcLink className="inline-block font-normal" href="/search">
-                    Mumbai
-                  </NcLink>
+                    <span className="sr-only">Search all icons</span>
+                    <Input
+                      id="search-input"
+                      type="search"
+                      placeholder="Type and press enter"
+                      sizeClass="pl-14 py-4 pe-5 md:ps-16"
+                      value={searchTextValue}
+                      onChange={(e) => setSearchTextValue(e.target.value)}
+                      defaultValue={""}
+                    />
+                    <ButtonCircle
+                      className="absolute end-2.5 top-1/2 transform -translate-y-1/2"
+                      size=" w-11 h-11"
+                      type="submit"
+                    >
+                      <ArrowRightIcon className="w-5 h-5 rtl:rotate-180" />
+                    </ButtonCircle>
+                    <span className="absolute start-5 top-1/2 transform -translate-y-1/2 text-2xl md:start-6">
+                      <svg
+                        width="24"
+                        height="24"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="1.5"
+                          d="M19.25 19.25L15.5 15.5M4.75 11C4.75 7.54822 7.54822 4.75 11 4.75C14.4518 4.75 17.25 7.54822 17.25 11C17.25 14.4518 14.4518 17.25 11 17.25C7.54822 17.25 4.75 14.4518 4.75 11Z"
+                        ></path>
+                      </svg>
+                    </span>
+                  </label>
                 </div>
-              </div>
+              </form>
             </header>
           </div>
         </div>
@@ -251,28 +239,6 @@ const PageSearch = ({}) => {
             <ButtonPrimary>Show me more</ButtonPrimary>
           </div>
         </main>
-
-        {/* MORE SECTIONS */}
-        {/* === SECTION 5 === */}
-        <div className="relative py-16">
-          <BackgroundSection />
-          <SectionGridCategoryBox
-            categories={DEMO_CATEGORIES.filter((_, i) => i < 10)}
-          />
-          <div className="text-center mx-auto mt-10 md:mt-16">
-            <ButtonSecondary>Show me more</ButtonSecondary>
-          </div>
-        </div>
-
-        {/* === SECTION 5 === */}
-        <SectionSliderNewAuthors
-          heading="Top elite authors"
-          subHeading="Discover our elite writers"
-          authors={DEMO_AUTHORS.filter((_, i) => i < 10)}
-        />
-
-        {/* SUBCRIBES */}
-        <SectionSubscribe2 />
       </div>
     </div>
   );

@@ -1,11 +1,16 @@
-import { combineReducers, CombinedState, AnyAction, Reducer } from "redux";
+import { combineReducers, AnyAction, Reducer } from "redux";
+import { CombinedState } from "@reduxjs/toolkit";
+import auth, { AuthState } from "./slices/auth";
 import base, { BaseState } from "./slices/base";
-import dialog, { DialogState } from "./slices/dialog/dialogSlice";
+import visit, { VisitState } from "./slices/visit";
+import locale, { LocaleState } from "./slices/locale/localeSlice";
 import RtkQueryService from "@/lib/actions/RtkQueryService";
 
 export type RootState = CombinedState<{
+  auth: CombinedState<AuthState>;
   base: CombinedState<BaseState>;
-  dialog: DialogState;
+  locale: LocaleState;
+  visit: CombinedState<VisitState>;
   /* eslint-disable @typescript-eslint/no-explicit-any */
   [RtkQueryService.reducerPath]: any;
 }>;
@@ -15,8 +20,9 @@ export interface AsyncReducers {
 }
 
 const staticReducers = {
+  auth,
   base,
-  dialog,
+  locale,
   // visit,
   [RtkQueryService.reducerPath]: RtkQueryService.reducer,
 };

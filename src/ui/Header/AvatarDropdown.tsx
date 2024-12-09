@@ -6,37 +6,53 @@ import { Fragment } from "react";
 import Avatar from "@/ui/Avatar/Avatar";
 import SwitchDarkMode2 from "@/ui/SwitchDarkMode/SwitchDarkMode2";
 import Link from "next/link";
+import {
+  setUser,
+  signOutSuccess,
+  useAppDispatch,
+  useAppSelector,
+} from "@/store";
 
 export default function AvatarDropdown() {
+  const dispatch = useAppDispatch();
+  const { fullname, phone_number, id, status } = useAppSelector(
+    (state) => state.auth.user
+  );
+  const { token, signedIn } = useAppSelector((state) => state.auth.session);
+
+  const handleSignOut = () => {
+    dispatch(signOutSuccess());
+    dispatch(setUser({}));
+  };
+
+  if (!signedIn) return null;
   return (
     <div className="AvatarDropdown ">
       <Popover className="relative">
         {({ open, close }) => (
           <>
             <Popover.Button
-              className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none flex items-center justify-center`}
+              className={`h-10 rounded-full text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none flex items-center justify-center`}
             >
-              <svg
-                className=" w-6 h-6"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M20.5899 22C20.5899 18.13 16.7399 15 11.9999 15C7.25991 15 3.40991 18.13 3.40991 22"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+              <>
+                <h4 className="font-semibold whitespace-nowrap flex gap-2 mx-2">
+                  {fullname ? fullname : ""}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                    stroke="currentColor"
+                    className="size-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                    />
+                  </svg>
+                </h4>
+              </>
             </Popover.Button>
             <Transition
               as={Fragment}
@@ -54,8 +70,10 @@ export default function AvatarDropdown() {
                       <Avatar imgUrl={avatarImgs[7]} sizeClass="w-12 h-12" />
 
                       <div className="flex-grow ms-3">
-                        <h4 className="font-semibold">Eden Smith</h4>
-                        <p className="text-xs mt-0.5">Los Angeles, CA</p>
+                        <h4 className="font-semibold">
+                          {fullname ? fullname : ""}
+                        </h4>
+                        <p className="text-xs mt-0.5">{phone_number}</p>
                       </div>
                     </div>
 
@@ -285,7 +303,7 @@ export default function AvatarDropdown() {
                     <Link
                       href={"/#"}
                       className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
-                      onClick={() => close()}
+                      onClick={() => handleSignOut()}
                     >
                       <div className="flex items-center justify-center flex-shrink-0 text-neutral-500 dark:text-neutral-300">
                         <svg

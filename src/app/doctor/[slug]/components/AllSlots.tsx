@@ -8,10 +8,16 @@ export default function AllSlots({
   setShowSlots,
   doctorData,
   selectedOption,
+  selectedSlot,
+  setSelectedSlot,
+  navigateToBookAppointment,
 }: {
   setShowSlots: any;
   doctorData: any;
   selectedOption: any;
+  selectedSlot: any;
+  setSelectedSlot: any;
+  navigateToBookAppointment: any;
 }) {
   const today = new Date();
   const [selectedDay, setSelectedDay] = useState({
@@ -193,11 +199,14 @@ export default function AllSlots({
             slots.map((slot: any, index: number) => (
               <Button
                 sizeClass="!text-base px-2 py-2"
-                key={index}
-                pattern="twoTone"
+                key={slot.id}
+                pattern={selectedSlot.id === slot.id ? "primary" : "twoTone"}
                 className="rounded-sm"
+                onClick={() => {
+                  setSelectedSlot(slot);
+                }}
               >
-                {`${slot.from} `}{" "}
+                {`${slot.from} `}
               </Button>
             ))
           ) : (
@@ -208,6 +217,11 @@ export default function AllSlots({
           disabled={!slots.length}
           pattern="primary"
           className="rounded-sm"
+          onClick={() => {
+            if (selectedSlot) {
+              navigateToBookAppointment(true);
+            }
+          }}
         >
           Book Appointment
         </Button>
