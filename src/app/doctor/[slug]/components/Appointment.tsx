@@ -13,6 +13,9 @@ export default function Appointment({
   doctorData,
   setSelectedOption,
   selectedOption,
+  selectedSlot,
+  setSelectedSlot,
+  navigateToBookAppointment,
 }: {
   setShowSlots: (value: boolean) => void;
   username: string;
@@ -21,6 +24,9 @@ export default function Appointment({
   doctorData: any;
   setSelectedOption: any;
   selectedOption: any;
+  selectedSlot: any;
+  setSelectedSlot: any;
+  navigateToBookAppointment: any;
 }) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -28,9 +34,6 @@ export default function Appointment({
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const [timeSlots] = useState(["05:30 PM", "05:45 PM", "06:00 PM"]); // Sample time slots
-
-  // Fetch workspaces
   useEffect(() => {
     const fetchWorkspaces = async () => {
       try {
@@ -51,7 +54,6 @@ export default function Appointment({
   }, [username]);
   useEffect(() => {
     const fetchWorkspaces = async () => {
-      console.log(doctorData, selectedOption);
       if (!doctorData.id) {
         return;
       }
@@ -167,15 +169,29 @@ export default function Appointment({
                 <Button
                   sizeClass="!text-base px-2 py-2"
                   key={slot.id}
-                  pattern="twoTone"
+                  pattern={selectedSlot.id === slot.id ? "primary" : "twoTone"}
                   className="rounded-sm"
+                  onClick={() => {
+                    setSelectedSlot(slot);
+                    navigateToBookAppointment(true);
+                  }}
                 >
                   {`${slot.from} `}
                 </Button>
               ))}
             </div>
+            {/* {selectedSlot.id && (
+              <Button
+                pattern="primary"
+                className="w-full rounded-lg"
+                onClick={() => setShowSlots(true)}
+                sizeClass="py-2 !text-sm"
+              >
+                Continue
+              </Button>
+            )} */}
             <Button
-              pattern="primary"
+              pattern={selectedSlot.id ? "twoTone" : "primary"}
               className="w-full rounded-lg"
               onClick={() => setShowSlots(true)}
               sizeClass="py-2 !text-sm"
