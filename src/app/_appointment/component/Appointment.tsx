@@ -4,35 +4,34 @@ import React, { useState, useEffect } from "react";
 import Button from "@/ui/Button/Button";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/solid";
 import { getWorkspaces, getSlots } from "@/lib/actions/BookingApiService";
+import {
+  useAppSelector,
+  setSelectedWorkspace,
+  setSelectedSlot,
+  setSelectedDate,
+  useAppDispatch,
+} from "../store";
 
 export default function Appointment({
   setShowSlots,
   username,
-  setWorkspaces,
-  workspaces,
-  doctorData,
-  setSelectedOption,
-  selectedOption,
-  selectedSlot,
-  setSelectedSlot,
   navigateToBookAppointment,
 }: {
   setShowSlots: (value: boolean) => void;
   username: string;
-  setWorkspaces: any;
-  workspaces: any;
-  doctorData: any;
-  setSelectedOption: any;
-  selectedOption: any;
-  selectedSlot: any;
-  setSelectedSlot: any;
   navigateToBookAppointment: any;
 }) {
   const [isOpen, setIsOpen] = useState(false);
+  const { currentDoctor, selectedWorkspace, selectedSlot } = useAppSelector(
+    (state) => state.AppointmentList.data
+  );
+  const [workspaces, setWorkspaces] = useState<any[]>([]);
 
   const [slots, setSlots] = useState<any[]>([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     const fetchWorkspaces = async () => {
@@ -53,8 +52,8 @@ export default function Appointment({
     fetchWorkspaces();
   }, [username]);
   useEffect(() => {
-    const fetchWorkspaces = async () => {
-      if (!doctorData.id) {
+    const fetchSlots = async () => {
+      if (!currentDoctor.id) {
         return;
       }
 
@@ -65,8 +64,8 @@ export default function Appointment({
         setLoadingSlots(true);
         const body = { date: isoDate };
         const response = await getSlots(
-          doctorData.id,
-          selectedOption.value,
+          currentDoctor.id,
+          selectedWorkspace.value,
           body
         );
         console.log(response);
@@ -79,14 +78,13 @@ export default function Appointment({
       }
     };
 
-    fetchWorkspaces();
-  }, [doctorData, selectedOption]);
+    fetchSlots();
+  }, [currentDoctor, selectedWorkspace]);
 
   const toggleDropdown = () => setIsOpen(!isOpen);
 
   const handleOptionClick = (option: any) => {
-    setSelectedOption(option);
-    console.log(option);
+    dispatch(setSelectedWorkspace(option));
     setIsOpen(false);
   };
 
@@ -109,10 +107,10 @@ export default function Appointment({
           onClick={toggleDropdown}
         >
           <div>
-            <span className="font-semibold">{selectedOption.label}</span>
-            {selectedOption.description && (
+            <span className="font-semibold">{selectedWorkspace.label}</span>
+            {selectedWorkspace.description && (
               <p className="text-sm text-primary-500 mt-1 line-clamp-1">
-                {selectedOption.description}
+                {selectedWorkspace.description}
               </p>
             )}
           </div>
@@ -125,7 +123,7 @@ export default function Appointment({
 
         {isOpen && (
           <div className="absolute top-full mt-1 max-h-[50vh] overflow-y-auto w-full bg-white border overflow-hidden border-gray-300 rounded-lg shadow-lg z-10">
-            {workspaces.map((workspace) => (
+            {workspaces.map((workspace: any) => (
               <div
                 key={workspace.id}
                 className="p-2 cursor-pointer hover:bg-primary-100"
@@ -172,7 +170,12 @@ export default function Appointment({
                   pattern={selectedSlot.id === slot.id ? "primary" : "twoTone"}
                   className="rounded-sm"
                   onClick={() => {
-                    setSelectedSlot(slot);
+                    dispatch(setSelectedSlot(slot));
+                    const today = new Date();
+                    const isoDate =
+                      today.toISOString().split("T")[0] + "T00:00:00.000Z";
+                    console.log(isoDate);
+                    dispatch(setSelectedDate(isoDate));
                     navigateToBookAppointment(true);
                   }}
                 >
@@ -180,16 +183,7 @@ export default function Appointment({
                 </Button>
               ))}
             </div>
-            {/* {selectedSlot.id && (
-              <Button
-                pattern="primary"
-                className="w-full rounded-lg"
-                onClick={() => setShowSlots(true)}
-                sizeClass="py-2 !text-sm"
-              >
-                Continue
-              </Button>
-            )} */}
+
             <Button
               pattern={selectedSlot.id ? "twoTone" : "primary"}
               className="w-full rounded-lg"

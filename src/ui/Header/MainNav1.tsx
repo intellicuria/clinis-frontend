@@ -2,9 +2,6 @@ import React, { FC, useEffect } from "react";
 import Logo from "@/ui/Logo/Logo";
 import Navigation from "@/ui/Navigation/Navigation";
 import MenuBar from "@/ui/MenuBar/MenuBar";
-import SwitchDarkMode from "@/ui/SwitchDarkMode/SwitchDarkMode";
-import SearchModal from "../../components/search/SearchModal";
-import Button from "../Button/Button";
 import Image from "next/image";
 import clinisionew from "@/images/clinisiosvg.png";
 import clinisionewdark from "@/images/clinisionewdark.svg";
@@ -40,6 +37,7 @@ const MainNav1: FC<MainNav1Props> = ({}) => {
 
   const dispatch = useAppDispatch();
   const { location } = useAppSelector((state) => state.auth.user);
+  const { signedIn } = useAppSelector((state) => state.auth.session);
 
   return (
     <div className="nc-MainNav1 select-none relative z-10 bg-white dark:bg-slate-900 ">
