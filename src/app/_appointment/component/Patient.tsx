@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useAppSelector } from "@/store";
 import { useAppSelector as AppSelector } from "../store";
 import { bookAppointment } from "@/lib/actions/BookingApiService";
+import { useRouter } from "next/navigation";
 
 const formatDate = (dateString: string | Date): string => {
   const date = new Date(dateString);
@@ -35,8 +36,7 @@ const Patient = () => {
   );
   const { selectedSlot, currentDoctor, selectedDate, selectedWorkspace } =
     AppSelector((state) => state.AppointmentList.data);
-
-  console.log(selectedSlot, currentDoctor, selectedDate, selectedWorkspace);
+  const router = useRouter();
 
   const bookAppoint = async () => {
     console.log("Book Appointment");
@@ -91,6 +91,9 @@ const Patient = () => {
       };
       console.log(body);
       const response = await bookAppointment(body);
+      //navigate to /appointment/:appointmendId
+      router.push(`/appointment/${response.data.id}`);
+
       console.log(response);
     } catch (error) {
       console.error("Error in booking appointment:", error.message);
