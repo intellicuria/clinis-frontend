@@ -150,7 +150,7 @@ export async function getOrgWorkspaces<T>(organizationId: string): Promise<T> {
   }
 }
 export async function getSlots<T>(
-  doctorId: string,
+  doctorId: number,
   workspaceId: string,
   body: any
 ): Promise<T> {
@@ -159,6 +159,30 @@ export async function getSlots<T>(
   };
 
   const url = `${PROD_SERVER_URL}/slots/clinis/all/slots/${doctorId}/${workspaceId}`;
+  const axiosConfig: AxiosRequestConfig = {
+    url,
+    method: "POST",
+    data: body,
+    headers,
+    maxRedirects: 5,
+  };
+
+  try {
+    const response = await ClinisioApiService.fetchData<T>(axiosConfig);
+    console.log(response);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching workspaces:", error);
+    throw error;
+  }
+}
+
+export async function bookAppointment<T>(body: any): Promise<T> {
+  const headers = {
+    apikey: API_KEY,
+  };
+
+  const url = `${PROD_SERVER_URL}/appointment/clinis/book-appointment`;
   const axiosConfig: AxiosRequestConfig = {
     url,
     method: "POST",

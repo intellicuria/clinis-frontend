@@ -3,22 +3,17 @@ import React, { useState, useRef, useEffect } from "react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 import Button from "@/ui/Button/Button";
 import { getSlots } from "@/lib/actions/BookingApiService";
+import { useAppSelector } from "../store";
+import { setSelectedSlot, setSelectedDate, useAppDispatch } from "../store";
 
 export default function AllSlots({
   setShowSlots,
-  doctorData,
-  selectedOption,
-  selectedSlot,
-  setSelectedSlot,
   navigateToBookAppointment,
 }: {
   setShowSlots: any;
-  doctorData: any;
-  selectedOption: any;
-  selectedSlot: any;
-  setSelectedSlot: any;
   navigateToBookAppointment: any;
 }) {
+  const dispatch = useAppDispatch();
   const today = new Date();
   const [selectedDay, setSelectedDay] = useState({
     dayName: today.toLocaleString("en-US", { weekday: "short" }),
@@ -26,12 +21,16 @@ export default function AllSlots({
     date: today,
   });
 
+  const { currentDoctor, selectedSlot, selectedWorkspace } = useAppSelector(
+    (state) => state.AppointmentList.data
+  );
+
   const [slots, setSlots] = useState<any[]>([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
 
   useEffect(() => {
     const fetchSlots = async () => {
-      if (!doctorData.id || !selectedOption.value) {
+      if (!currentDoctor.id || !selectedWorkspace.value) {
         return;
       }
 
@@ -44,8 +43,8 @@ export default function AllSlots({
         setLoadingSlots(true);
         const body = { date: isoDate };
         const response = await getSlots(
-          doctorData.id,
-          selectedOption.value,
+          currentDoctor.id,
+          selectedWorkspace.value,
           body
         );
         console.log(response);
@@ -58,7 +57,7 @@ export default function AllSlots({
     };
 
     fetchSlots();
-  }, [doctorData, selectedOption, selectedDay]);
+  }, [currentDoctor, selectedWorkspace, selectedDay]);
 
   const daysContainerRef = useRef(null);
 
@@ -203,7 +202,14 @@ export default function AllSlots({
                 pattern={selectedSlot.id === slot.id ? "primary" : "twoTone"}
                 className="rounded-sm"
                 onClick={() => {
-                  setSelectedSlot(slot);
+                  dispatch(setSelectedSlot(slot));
+                  const correctedDate = new Date(selectedDay.date);
+                  correctedDate.setHours(0, 0, 0, 0); // Set time to midnight local time
+                  const isoDate = correctedDate.toISOString();
+                  console.log(isoDate);
+
+                  dispatch(setSelectedDate(isoDate));
+                  navigateToBookAppointment(true);
                 }}
               >
                 {`${slot.from} `}
@@ -213,18 +219,6 @@ export default function AllSlots({
             <p className="col-span-3 text-gray-500">No slots available</p>
           )}
         </div>
-        <Button
-          disabled={!slots.length}
-          pattern="primary"
-          className="rounded-sm"
-          onClick={() => {
-            if (selectedSlot) {
-              navigateToBookAppointment(true);
-            }
-          }}
-        >
-          Book Appointment
-        </Button>
       </div>
     </div>
   );

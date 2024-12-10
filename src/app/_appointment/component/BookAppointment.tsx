@@ -3,7 +3,7 @@
 import { ChevronLeftIcon } from "@heroicons/react/24/solid";
 import React, { useState, useRef } from "react";
 import Button from "@/ui/Button/Button";
-import PatientDetails from "./PatientDetails"; // Assuming the file is in the same directory
+import PatientDetails from "./PatientDetails";
 import { sendOTP, verifyOTP } from "@/lib/actions/PatientService";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { setToken, setUser, signInSuccess } from "@/store/slices/auth";
@@ -124,7 +124,7 @@ const BookAppointment = () => {
   }
 
   return (
-    <div className="p-6 max-w-lg mx-auto bg-white shadow-md rounded-lg">
+    <div className="p-6 max-w-lg mx-auto ">
       {/* Header */}
       <div className="flex justify-between items-center mb-4">
         <button onClick={() => setIsOtpSent(false)}>
@@ -135,7 +135,7 @@ const BookAppointment = () => {
       </div>
 
       {/* Appointment Details */}
-      <div className="bg-gray-100 p-4 rounded-lg mb-6">
+      <div className="bg-white shadow p-4 rounded-lg mb-6">
         <p className="text-sm font-medium">
           <span className="block text-gray-500">DATE & TIME</span>
           Today, 16 Nov 24 | 10:30 AM
