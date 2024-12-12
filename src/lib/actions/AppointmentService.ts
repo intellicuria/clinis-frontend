@@ -5,12 +5,12 @@ import ClinisioApiService from "./ClinisioApiService";
 
 const API_KEY = "123";
 
-export async function fetchAppointments<T>(id: any): Promise<T> {
+export async function fetchAppointments<T>(userId: string): Promise<T> {
   const headers = {
     apikey: API_KEY,
   };
 
-  const url = `${PROD_SERVER_URL}/appointment/id/${id}`;
+  const url = `${PROD_SERVER_URL}/appointments/user/${userId}`;
   const axiosConfig: AxiosRequestConfig = {
     url,
     method: "GET",
@@ -20,10 +20,31 @@ export async function fetchAppointments<T>(id: any): Promise<T> {
 
   try {
     const response = await ClinisioApiService.fetchData<T>(axiosConfig);
-    console.log(response);
     return response.data;
   } catch (error) {
-    console.error("Error fetching workspaces:", error);
+    console.error("Error fetching appointments:", error);
+    throw error;
+  }
+}
+
+export async function cancelAppointment<T>(appointmentId: string): Promise<T> {
+  const headers = {
+    apikey: API_KEY,
+  };
+
+  const url = `${PROD_SERVER_URL}/appointments/${appointmentId}/cancel`;
+  const axiosConfig: AxiosRequestConfig = {
+    url,
+    method: "POST",
+    headers,
+    maxRedirects: 5,
+  };
+
+  try {
+    const response = await ClinisioApiService.fetchData<T>(axiosConfig);
+    return response.data;
+  } catch (error) {
+    console.error("Error canceling appointment:", error);
     throw error;
   }
 }
