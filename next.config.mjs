@@ -9,7 +9,10 @@ const nextConfig = {
       "amazonaws.com",
       "clinisio-backend.s3.ap-south-1.amazonaws.com",
     ],
+    unoptimized: true,
   },
+  assetPrefix: process.env.NODE_ENV === 'production' ? '.' : '',
+  output: 'export',
   async rewrites() {
     return {
       beforeFiles: [
@@ -53,11 +56,9 @@ const nextConfig = {
       },
     ]
   },
-  assetPrefix: process.env.NEXT_PUBLIC_ASSET_PREFIX || '',
   typescript: {
     ignoreBuildErrors: true,
   },
-  output: 'standalone',
 }
 
 export default nextConfig
