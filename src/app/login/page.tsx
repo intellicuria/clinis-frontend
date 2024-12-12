@@ -2,9 +2,11 @@
 "use client";
 import { useState, useRef } from "react";
 import { useAppDispatch } from "@/store";
-import { sendOTP, verifyOTP } from "@/lib/actions/AuthService";
-import { setUser, signInSuccess, setToken } from "@/store";
+import { sendOTP, verifyOTP } from "@/lib/actions/PatientService";
+import { setUser, signInSuccess, setToken } from "@/store/slices/auth";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import Button from "@/ui/Button/Button";
 
 const Login = () => {
   const [mobileNumber, setMobileNumber] = useState("");
@@ -12,58 +14,83 @@ const Login = () => {
   const [isOtpSent, setIsOtpSent] = useState(false);
   const [isMobileValid, setIsMobileValid] = useState(true);
   const [isOtpValid, setIsOtpValid] = useState(true);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
   const dispatch = useAppDispatch();
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const handleMobileNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
+    const value = e.target.value.replace(/\D/g, '').slice(0, 10);
     setMobileNumber(value);
     setIsMobileValid(/^\d{10}$/.test(value));
   };
 
   const handleOtpChange = (event: React.ChangeEvent<HTMLInputElement>, index: number) => {
-    const value = event.target.value;
-    if (value.match(/^[0-9]$/)) {
+    const value = event.target.value.replace(/\D/g, '').slice(0, 1);
+    if (value || value === '') {
       const newOtp = [...otp];
       newOtp[index] = value;
       setOtp(newOtp);
-      if (index < otp.length - 1) {
+      if (value && index < otp.length - 1) {
         otpRefs.current[index + 1]?.focus();
       }
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
+    if (e.key === 'Backspace' && !otp[index] && index > 0) {
+      otpRefs.current[index - 1]?.focus();
+    }
+  };
+
   const handleSendOtp = async () => {
-    if (mobileNumber) {
-      try {
-        const response = await sendOTP({ mobile_number: mobileNumber });
+    if (!isMobileValid || mobileNumber.length !== 10) return;
+    
+    setLoading(true);
+    try {
+      const response = await sendOTP({ mobile_number: mobileNumber });
+      if (response.data?.status) {
         setIsOtpSent(true);
-      } catch (error) {
+        setIsOtpValid(true);
+      } else {
         alert("Failed to send OTP. Please try again.");
       }
+    } catch (error) {
+      alert("Error sending OTP. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleSubmitOtp = async () => {
     const enteredOtp = otp.join("");
+    if (enteredOtp.length !== 6) return;
+
+    setLoading(true);
     try {
-      const response = await verifyOTP({ mobile_number: mobileNumber, otp: enteredOtp });
-      if (response.data.status) {
+      const response = await verifyOTP({ 
+        mobile_number: mobileNumber, 
+        otp: enteredOtp 
+      });
+
+      if (response.data?.status) {
+        const userData = response.data.data;
         dispatch(setUser({
-          id: response.data.data.id,
-          phone_number: response.data.data.phone_number,
-          fullname: response.data.data.fullname,
-          status: response.data.data.status,
+          id: userData.id,
+          phone_number: userData.phone_number,
+          fullname: userData.fullname,
+          status: userData.status,
         }));
-        dispatch(signInSuccess(response.data.data.token));
-        dispatch(setToken(response.data.data.token));
+        dispatch(signInSuccess(userData.token));
+        dispatch(setToken(userData.token));
         router.push('/');
       } else {
         setIsOtpValid(false);
       }
     } catch (error) {
       setIsOtpValid(false);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -87,16 +114,22 @@ const Login = () => {
                   value={mobileNumber}
                   onChange={handleMobileNumberChange}
                   placeholder="Enter mobile number"
-                  className="w-full pl-12 pr-3 py-2 border border-gray-300 rounded-md"
+                  className="w-full pl-12 pr-3 py-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500"
                 />
               </div>
-              <button
+              {!isMobileValid && mobileNumber && (
+                <p className="mt-1 text-sm text-red-500">
+                  Please enter a valid 10-digit mobile number
+                </p>
+              )}
+              <Button
                 onClick={handleSendOtp}
-                disabled={!isMobileValid || mobileNumber.length !== 10}
-                className="w-full mt-4 py-2 px-4 border border-transparent rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 disabled:bg-gray-400"
+                disabled={!isMobileValid || mobileNumber.length !== 10 || loading}
+                className="w-full mt-4"
+                pattern="primary"
               >
-                Send OTP
-              </button>
+                {loading ? "Sending..." : "Send OTP"}
+              </Button>
             </div>
           ) : (
             <div>
@@ -107,9 +140,10 @@ const Login = () => {
                     type="text"
                     value={digit}
                     onChange={(e) => handleOtpChange(e, index)}
+                    onKeyDown={(e) => handleKeyDown(e, index)}
                     maxLength={1}
                     ref={(el) => (otpRefs.current[index] = el)}
-                    className="w-12 h-12 text-center border border-gray-300 rounded-md"
+                    className="w-12 h-12 text-center border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500"
                   />
                 ))}
               </div>
@@ -118,12 +152,14 @@ const Login = () => {
                   Invalid OTP. Please try again.
                 </p>
               )}
-              <button
+              <Button
                 onClick={handleSubmitOtp}
-                className="w-full mt-4 py-2 px-4 border border-transparent rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700"
+                disabled={otp.join("").length !== 6 || loading}
+                className="w-full mt-4"
+                pattern="primary"
               >
-                Verify OTP
-              </button>
+                {loading ? "Verifying..." : "Verify OTP"}
+              </Button>
             </div>
           )}
         </div>
