@@ -95,21 +95,29 @@ export default function ProfilePage() {
       
       <div className="bg-white p-6 rounded-lg shadow">
         <h3 className="text-lg font-semibold mb-4">Medical History</h3>
-        <ul className="list-disc pl-5">
-          {profile?.medical_history.map((item, index) => (
-            <li key={index} className="text-gray-700">{item}</li>
-          ))}
-        </ul>
+        {profile?.medical_history && profile.medical_history.length > 0 ? (
+          <ul className="list-disc pl-5">
+            {profile.medical_history.map((item, index) => (
+              <li key={index} className="text-gray-700">{item}</li>
+            ))}
+          </ul>
+        ) : (
+          <p className="text-gray-500 italic">No medical history available</p>
+        )}
       </div>
 
       <div className="bg-white p-6 rounded-lg shadow">
         <h3 className="text-lg font-semibold mb-4">Allergies</h3>
         <div className="flex flex-wrap gap-2">
-          {profile?.allergies.map((allergy, index) => (
-            <span key={index} className="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm">
-              {allergy}
-            </span>
-          ))}
+          {profile?.allergies && profile.allergies.length > 0 ? (
+            profile.allergies.map((allergy, index) => (
+              <span key={index} className="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm">
+                {allergy}
+              </span>
+            ))
+          ) : (
+            <p className="text-gray-500 italic">No allergies recorded</p>
+          )}
         </div>
       </div>
     </div>
