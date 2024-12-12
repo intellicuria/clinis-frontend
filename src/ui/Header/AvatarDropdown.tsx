@@ -19,6 +19,7 @@ export default function AvatarDropdown() {
     (state) => state.auth.user
   );
   const { token, signedIn } = useAppSelector((state) => state.auth.session);
+  const userData = useAppSelector((state) => state.auth.user); // Added to access user data directly
 
   const handleSignOut = () => {
     dispatch(signOutSuccess());
@@ -36,7 +37,7 @@ export default function AvatarDropdown() {
             >
               <>
                 <h4 className="font-semibold whitespace-nowrap flex gap-2 mx-2">
-                  {fullname ? fullname : ""}
+                  {userData.fullname ? userData.fullname : ""}
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
@@ -71,9 +72,9 @@ export default function AvatarDropdown() {
 
                       <div className="flex-grow ms-3">
                         <h4 className="font-semibold">
-                          {fullname ? fullname : ""}
+                          {userData.fullname ? userData.fullname : ""}
                         </h4>
-                        <p className="text-xs mt-0.5">{phone_number}</p>
+                        <p className="text-xs mt-0.5">{userData.phone_number}</p>
                       </div>
                     </div>
 
