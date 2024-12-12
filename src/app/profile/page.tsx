@@ -5,6 +5,7 @@ import React from 'react';
 import Image from 'next/image';
 import ButtonPrimary from '@/ui/Button/ButtonPrimary';
 import ButtonSecondary from '@/ui/Button/ButtonSecondary';
+import Calendar from '@/ui/Calendar/Calendar';
 
 export default function ProfilePage() {
   return (
@@ -105,6 +106,7 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
+      <Calendar />
     </div>
   );
 }
