@@ -1,32 +1,90 @@
 
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAppSelector } from "@/store";
 import ButtonPrimary from "@/ui/Button/ButtonPrimary";
 import Image from "next/image";
 import Input from "@/ui/Input/Input";
 import { useRouter } from "next/navigation";
+import { getPatientProfile, updatePatientProfile, updateProfileImage } from "@/lib/actions/PatientService";
+import toast from 'react-hot-toast';
 
 export default function EditProfilePage() {
   const router = useRouter();
-  const { fullname, phone_number, id } = useAppSelector((state) => state.auth.user);
+  const [loading, setLoading] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [formData, setFormData] = useState({
-    fullName: fullname || "",
+    fullname: "",
     email: "",
-    phoneNumber: phone_number || "",
+    phone_number: "",
     address: "",
-    dateOfBirth: "",
+    dob: "",
     gender: "",
-    bloodGroup: "",
-    emergencyContact: "",
+    blood_group: "",
+    height: "",
+    weight: "",
+    medical_history: [] as string[],
+    allergies: [] as string[],
   });
+
+  useEffect(() => {
+    fetchProfileData();
+  }, []);
+
+  const fetchProfileData = async () => {
+    try {
+      const response = await getPatientProfile();
+      if (response.status) {
+        const data = response.data;
+        setFormData({
+          fullname: data.fullname || "",
+          email: data.email || "",
+          phone_number: data.phone_number || "",
+          address: "",
+          dob: data.dob || "",
+          gender: data.gender || "",
+          blood_group: data.blood_group || "",
+          height: data.height?.toString() || "",
+          weight: data.weight?.toString() || "",
+          medical_history: data.medical_history || [],
+          allergies: data.allergies || [],
+        });
+      }
+    } catch (error) {
+      toast.error("Failed to fetch profile data");
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement profile update API call
-    console.log("Form submitted:", formData);
-    router.push("/profile");
+    setLoading(true);
+    try {
+      // Update profile data
+      const response = await updatePatientProfile({
+        ...formData,
+        height: Number(formData.height),
+        weight: Number(formData.weight),
+      });
+
+      if (response.status) {
+        // Upload image if selected
+        if (imageFile) {
+          const formDataImg = new FormData();
+          formDataImg.append('profile_image', imageFile);
+          await updateProfileImage(formDataImg);
+        }
+        
+        toast.success("Profile updated successfully");
+        router.push("/profile");
+      } else {
+        toast.error("Failed to update profile");
+      }
+    } catch (error) {
+      toast.error("Error updating profile");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -34,6 +92,12 @@ export default function EditProfilePage() {
       ...formData,
       [e.target.name]: e.target.value,
     });
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setImageFile(e.target.files[0]);
+    }
   };
 
   return (
@@ -44,14 +108,23 @@ export default function EditProfilePage() {
         <div className="flex items-center gap-4 mb-8">
           <div className="relative w-24 h-24">
             <Image
-              src="/images/avatar.svg"
+              src={imageFile ? URL.createObjectURL(imageFile) : "/images/avatar.svg"}
               alt="Profile"
               className="rounded-full"
               fill
               style={{ objectFit: "cover" }}
             />
           </div>
-          <ButtonPrimary>Change Photo</ButtonPrimary>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            className="hidden"
+            id="profileImage"
+          />
+          <label htmlFor="profileImage">
+            <ButtonPrimary>Change Photo</ButtonPrimary>
+          </label>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -61,8 +134,8 @@ export default function EditProfilePage() {
                 Full Name
               </label>
               <Input
-                name="fullName"
-                value={formData.fullName}
+                name="fullname"
+                value={formData.fullname}
                 onChange={handleChange}
                 type="text"
                 placeholder="Enter your full name"
@@ -87,8 +160,8 @@ export default function EditProfilePage() {
                 Phone Number
               </label>
               <Input
-                name="phoneNumber"
-                value={formData.phoneNumber}
+                name="phone_number"
+                value={formData.phone_number}
                 onChange={handleChange}
                 type="tel"
                 placeholder="Enter your phone number"
@@ -100,8 +173,8 @@ export default function EditProfilePage() {
                 Date of Birth
               </label>
               <Input
-                name="dateOfBirth"
-                value={formData.dateOfBirth}
+                name="dob"
+                value={formData.dob}
                 onChange={handleChange}
                 type="date"
               />
@@ -118,9 +191,9 @@ export default function EditProfilePage() {
                 className="w-full rounded-lg border border-neutral-200 focus:border-primary-300 focus:ring focus:ring-primary-200 focus:ring-opacity-50"
               >
                 <option value="">Select gender</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-                <option value="other">Other</option>
+                <option value="MALE">Male</option>
+                <option value="FEMALE">Female</option>
+                <option value="OTHER">Other</option>
               </select>
             </div>
 
@@ -129,8 +202,8 @@ export default function EditProfilePage() {
                 Blood Group
               </label>
               <select
-                name="bloodGroup"
-                value={formData.bloodGroup}
+                name="blood_group"
+                value={formData.blood_group}
                 onChange={handleChange}
                 className="w-full rounded-lg border border-neutral-200 focus:border-primary-300 focus:ring focus:ring-primary-200 focus:ring-opacity-50"
               >
@@ -146,35 +219,37 @@ export default function EditProfilePage() {
               </select>
             </div>
 
-            <div className="md:col-span-2">
+            <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Address
+                Height (cm)
               </label>
               <Input
-                name="address"
-                value={formData.address}
+                name="height"
+                value={formData.height}
                 onChange={handleChange}
-                type="text"
-                placeholder="Enter your address"
+                type="number"
+                placeholder="Enter height in cm"
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Emergency Contact
+                Weight (kg)
               </label>
               <Input
-                name="emergencyContact"
-                value={formData.emergencyContact}
+                name="weight"
+                value={formData.weight}
                 onChange={handleChange}
-                type="tel"
-                placeholder="Emergency contact number"
+                type="number"
+                placeholder="Enter weight in kg"
               />
             </div>
           </div>
 
           <div className="flex gap-4">
-            <ButtonPrimary type="submit">Save Changes</ButtonPrimary>
+            <ButtonPrimary type="submit" disabled={loading}>
+              {loading ? "Saving..." : "Save Changes"}
+            </ButtonPrimary>
             <button
               type="button"
               onClick={() => router.back()}
