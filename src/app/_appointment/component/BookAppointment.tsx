@@ -80,13 +80,10 @@ const BookAppointment = () => {
       try {
         const body = { mobile_number: mobileNumber };
         const response = await sendOTP(body);
-
         setIsOtpSent(true);
-        console.log(response);
-      } catch (error) {
-        console.error("Error fetching workspaces:", error);
-      } finally {
-        // Perform cleanup if needed
+      } catch (error: any) {
+        setIsOtpSent(false);
+        alert(error.message || "Failed to send OTP. Please try again.");
       }
       console.log("OTP sent to", mobileNumber); // Simulate OTP sending
     }
@@ -96,9 +93,10 @@ const BookAppointment = () => {
   const handleSubmitOtp = async () => {
     const enteredOtp = otp.join("");
     if (enteredOtp) {
-      const body = { mobile_number: mobileNumber, otp: enteredOtp };
-      const response: any = await verifyOTP(body);
-      if (response.status) {
+      try {
+        const body = { mobile_number: mobileNumber, otp: enteredOtp };
+        const response: any = await verifyOTP(body);
+        if (response.status) {
         dispatch(
           setUser({
             id: response.data.id,
@@ -112,11 +110,18 @@ const BookAppointment = () => {
       }
       setIsOtpSent(true);
       console.log(response);
-      setIsOtpVerified(true); // Change state to indicate OTP verification success
+      setIsOtpVerified(true);
     } else {
-      setIsOtpValid(false); // Show error if OTP is incorrect
+      setIsOtpValid(false);
     }
-  };
+  } catch (error: any) {
+    setIsOtpValid(false);
+    alert(error.message || "Failed to verify OTP. Please try again.");
+  }
+} else {
+  setIsOtpValid(false);
+}
+};
 
   // Conditional rendering based on OTP verification
   if (isOtpVerified) {

@@ -48,7 +48,7 @@ ClinisioBaseService.interceptors.response.use(
 
     if (response && unauthorizedCode.includes(response.status)) {
       store.dispatch(signOutSuccess());
-      // ShowAlertMessage(response?.data?.error, 'danger')
+      throw new Error("Session expired. Please login again.");
     }
 
     return Promise.reject(error);
