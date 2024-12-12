@@ -1,16 +1,15 @@
 
 "use client";
 import { useState } from "react";
-import { useParams, notFound } from "next/navigation";
+import { useParams } from "next/navigation";
 import { DoctorProfile } from "./components";
 import AppointmentPage from "@/app/_appointment/page";
 
 export default function Page() {
   const params = useParams();
   const { slug } = params;
-  
-  if (!slug || typeof slug !== 'string' || slug.includes('pike')) {
-    notFound();
+  if (!slug) {
+    return <div>Loading...</div>;
   }
 
   return (
