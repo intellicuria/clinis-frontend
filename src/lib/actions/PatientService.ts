@@ -4,6 +4,30 @@ import { Response } from "@/types/module.types";
 import ClinisioApiService from "./ClinisioApiService";
 const API_KEY = "123";
 
+export async function getPatientProfile() {
+  const headers = { apikey: API_KEY };
+  const url = "/patient/me";
+  return ClinisioApiService.fetchData({ url, method: "GET", headers });
+}
+
+export async function updatePatientProfile(data: any) {
+  const headers = { apikey: API_KEY };
+  const url = "/patient/update";
+  return ClinisioApiService.fetchData({ url, method: "PUT", headers, data });
+}
+
+export async function updateProfileImage(formData: FormData) {
+  const headers = { apikey: API_KEY };
+  const url = "/patient/update-image";
+  return ClinisioApiService.fetchData({ url, method: "PATCH", headers, data: formData });
+}
+
+export async function getPatientRecords(patientId: string) {
+  const headers = { apikey: API_KEY };
+  const url = `/patient/records/${patientId}`;
+  return ClinisioApiService.fetchData({ url, method: "GET", headers });
+}
+
 export async function sendOTP<T>(data: any): Promise<T> {
   const headers = {
     apikey: API_KEY,
