@@ -4,12 +4,23 @@ import SectionLargeSlider from "./SectionLargeSlider";
 import Card10V2 from "@/ui/Card10/Card10V2";
 
 async function getData() {
-  const doctors = await getAllDoctor();
-  const organizations = await getAllOrganizations();
-  return {
-    doctors: doctors.data || [],
-    organizations: organizations.data || []
-  };
+  try {
+    const [doctors, organizations] = await Promise.all([
+      getAllDoctor(),
+      getAllOrganizations()
+    ]);
+    
+    return {
+      doctors: doctors?.data || [],
+      organizations: organizations?.data || []
+    };
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    return {
+      doctors: [],
+      organizations: []
+    };
+  }
 }
 
 export default async function HomePage() {
