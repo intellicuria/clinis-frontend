@@ -4,7 +4,7 @@ const nextConfig = {
   images: {
     domains: [
       "images.pexels.com",
-      "images.unsplash.com",
+      "images.unsplash.com", 
       "secure.gravatar.com",
       "amazonaws.com",
       "clinisio-backend.s3.ap-south-1.amazonaws.com",
@@ -26,9 +26,23 @@ const nextConfig = {
       ],
     }
   },
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'Access-Control-Allow-Origin',
+            value: '*',
+          },
+        ],
+      },
+    ]
+  },
   typescript: {
     ignoreBuildErrors: true,
   },
+  output: 'standalone',
 }
 
 export default nextConfig

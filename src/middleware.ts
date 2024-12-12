@@ -7,7 +7,7 @@ export function middleware(request: NextRequest) {
   const hostname = request.headers.get('host') || ''
   
   const subdomain = hostname.split('.')[0]
-  const isPrimaryDomain = hostname === 'clinis.io' || hostname.includes('0.0.0.0')
+  const isPrimaryDomain = hostname === 'clinis.io' || hostname.includes('0.0.0.0') || hostname.includes('localhost')
 
   if (!isPrimaryDomain && hostname.endsWith('clinis.io')) {
     return NextResponse.rewrite(new URL(`/doctor/${subdomain}`, request.url))
