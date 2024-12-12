@@ -131,7 +131,7 @@ export default function ProfilePage() {
               </span>
             </div>
             <div className="flex gap-3">
-              <ButtonPrimary>Edit Profile</ButtonPrimary>
+              <ButtonPrimary onClick={() => window.location.href = '/profile/edit'}>Edit Profile</ButtonPrimary>
               <ButtonSecondary>Download Records</ButtonSecondary>
             </div>
           </div>
