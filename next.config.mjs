@@ -4,7 +4,7 @@ const nextConfig = {
   images: {
     domains: [
       "images.pexels.com",
-      "images.unsplash.com", 
+      "images.unsplash.com",
       "secure.gravatar.com",
       "amazonaws.com",
       "clinisio-backend.s3.ap-south-1.amazonaws.com",
@@ -18,10 +18,10 @@ const nextConfig = {
           has: [
             {
               type: 'host',
-              value: '(?<username>.*)\\.clinis\\.io',
+              value: '(?<subdomain>.*)\\.clinis\\.io',
             },
           ],
-          destination: '/doctor/:username/:path*',
+          destination: '/doctor/:subdomain/:path*',
         },
       ],
     }
