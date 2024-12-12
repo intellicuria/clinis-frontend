@@ -29,6 +29,8 @@ interface PatientProfile {
 }
 
 export default function ProfilePage() {
+  import MedicalRecordsTab from './components/MedicalRecordsTab';
+  
   const [profile, setProfile] = useState<PatientProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("overview");
@@ -87,10 +89,6 @@ export default function ProfilePage() {
     setRecords([...records, ...newRecords]);
     setUploading(false);
   };
-
-  import MedicalRecordsTab from './components/MedicalRecordsTab';
-
-// ... rest of the imports
 
 const renderMedicalRecords = () => (
   <MedicalRecordsTab />
