@@ -34,9 +34,10 @@ export default function EditProfilePage() {
 
   const fetchProfileData = async () => {
     try {
+      setLoading(true);
       const response = await getPatientProfile();
-      if (response.status) {
-        const data = response.data;
+      if (response?.data?.status) {
+        const data = response.data.data;
         setFormData({
           fullname: data.fullname || "",
           email: data.email || "",
@@ -50,9 +51,14 @@ export default function EditProfilePage() {
           medical_history: data.medical_history || [],
           allergies: data.allergies || [],
         });
+      } else {
+        toast.error(response?.data?.message || "Failed to fetch profile data");
       }
-    } catch (error) {
-      toast.error("Failed to fetch profile data");
+    } catch (error: any) {
+      console.error("Error fetching profile:", error);
+      toast.error(error?.response?.data?.message || "Failed to fetch profile data");
+    } finally {
+      setLoading(false);
     }
   };
 

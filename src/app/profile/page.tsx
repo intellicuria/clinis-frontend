@@ -30,24 +30,26 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState<PatientProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("overview");
-  const { id } = useAppSelector((state) => state.auth.user);
+  const { user } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
-    fetchProfileData();
-  }, []);
+    if (user?.id) {
+      fetchProfileData();
+    }
+  }, [user]);
 
   const fetchProfileData = async () => {
     try {
       setLoading(true);
       const response = await getPatientProfile();
-      if (response.status) {
-        setProfile(response.data);
+      if (response?.data?.status) {
+        setProfile(response.data.data);
       } else {
-        toast.error("Failed to fetch profile data");
+        toast.error(response?.data?.message || "Failed to fetch profile data");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching profile:", error);
-      toast.error("Error loading profile data");
+      toast.error(error?.response?.data?.message || "Error loading profile data");
     } finally {
       setLoading(false);
     }

@@ -5,9 +5,17 @@ import ClinisioApiService from "./ClinisioApiService";
 const API_KEY = "123";
 
 export async function getPatientProfile() {
-  const headers = { apikey: API_KEY };
+  const headers = { 
+    apikey: API_KEY,
+    Authorization: `Bearer ${localStorage.getItem('token')}`
+  };
   const url = "/patient/me";
-  return ClinisioApiService.fetchData({ url, method: "GET", headers });
+  return ClinisioApiService.fetchData({ 
+    url, 
+    method: "GET", 
+    headers,
+    withCredentials: true
+  });
 }
 
 export async function updatePatientProfile(data: any) {
@@ -19,7 +27,12 @@ export async function updatePatientProfile(data: any) {
 export async function updateProfileImage(formData: FormData) {
   const headers = { apikey: API_KEY };
   const url = "/patient/update-image";
-  return ClinisioApiService.fetchData({ url, method: "PATCH", headers, data: formData });
+  return ClinisioApiService.fetchData({
+    url,
+    method: "PATCH",
+    headers,
+    data: formData,
+  });
 }
 
 export async function getPatientRecords(patientId: string) {
