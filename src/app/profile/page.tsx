@@ -10,7 +10,6 @@ import Skeleton from "@/ui/Skeleton/Skeleton";
 import toast from "react-hot-toast";
 import { getPatientProfile } from "@/lib/actions/PatientService";
 import MedicalRecordsTab from "./components/MedicalRecordsTab";
-import { getPatientProfile } from "@/lib/actions/PatientService";
 
 interface PatientProfile {
   id: number;
@@ -26,6 +25,18 @@ interface PatientProfile {
   weight: number;
   blood_group: string;
 }
+
+// Placeholder for AppointmentsTab component
+const AppointmentsTab = () => {
+  return (
+    <div>
+      <h2>Appointments</h2>
+      {/* Add your appointment data display here */}
+      <p>This is a placeholder for the Appointments tab.  Replace this with your actual appointment data display logic.</p>
+    </div>
+  );
+};
+
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState<PatientProfile | null>(null);
@@ -165,6 +176,7 @@ export default function ProfilePage() {
         {[
           { id: "overview", label: "Overview" },
           { id: "records", label: "Medical Records" },
+          { id: "appointments", label: "Appointments" },
         ].map((tab) => (
           <button
             key={tab.id}
@@ -201,8 +213,10 @@ export default function ProfilePage() {
           </div>
         ) : activeTab === "overview" ? (
           renderOverview()
-        ) : (
+        ) : activeTab === "records" ? (
           <MedicalRecordsTab />
+        ) : (
+          <AppointmentsTab />
         )}
       </div>
     </div>
