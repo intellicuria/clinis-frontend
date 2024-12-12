@@ -1,76 +1,130 @@
 
 "use client";
 
-import React from "react";
-import { useState } from "react";
+import React, { useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { MedicalRecord } from "@/store/slices/medicalRecords/types";
+import { 
+  setViewMode, 
+  setSortBy, 
+  setSortOrder, 
+  setFilterText,
+  addRecord 
+} from "@/store/slices/medicalRecords/medicalRecordsSlice";
 import ButtonPrimary from "@/ui/Button/ButtonPrimary";
-
-interface MedicalRecord {
-  id: number;
-  date: string;
-  doctor: string;
-  diagnosis: string;
-  prescription: string;
-  notes: string;
-}
+import { ViewListIcon, ViewGridIcon } from "@heroicons/react/24/outline";
+import { RootState } from "@/store";
+import RecordCard from "./RecordCard";
+import RecordList from "./RecordList";
+import UploadModal from "./UploadModal";
 
 const MedicalRecordsTab = () => {
-  const [records] = useState<MedicalRecord[]>([
-    {
-      id: 1,
-      date: "2024-01-15",
-      doctor: "Dr. Sarah Smith",
-      diagnosis: "Common Cold",
-      prescription: "Paracetamol 500mg",
-      notes: "Rest and hydration recommended"
-    },
-    {
-      id: 2,
-      date: "2023-12-20",
-      doctor: "Dr. John Doe",
-      diagnosis: "Annual Checkup",
-      prescription: "Vitamins",
-      notes: "All vitals normal"
-    }
-  ]);
+  const dispatch = useDispatch();
+  const { 
+    records, 
+    viewMode, 
+    sortBy, 
+    sortOrder, 
+    filterText 
+  } = useSelector((state: RootState) => state.medicalRecords);
+  
+  const [showUploadModal, setShowUploadModal] = React.useState(false);
+
+  const handleViewModeChange = useCallback((mode: 'grid' | 'list') => {
+    dispatch(setViewMode(mode));
+  }, [dispatch]);
+
+  const handleSortChange = useCallback((value: string) => {
+    const [newSortBy, newSortOrder] = value.split('-') as ['date' | 'doctor' | 'diagnosis', 'asc' | 'desc'];
+    dispatch(setSortBy(newSortBy));
+    dispatch(setSortOrder(newSortOrder));
+  }, [dispatch]);
+
+  const handleFilterChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    dispatch(setFilterText(e.target.value));
+  }, [dispatch]);
+
+  const filteredAndSortedRecords = React.useMemo(() => {
+    return records
+      .filter(record => 
+        record.doctor.toLowerCase().includes(filterText.toLowerCase()) ||
+        record.diagnosis.toLowerCase().includes(filterText.toLowerCase())
+      )
+      .sort((a, b) => {
+        const sortValue = sortOrder === 'asc' ? 1 : -1;
+        return a[sortBy] > b[sortBy] ? sortValue : -sortValue;
+      });
+  }, [records, filterText, sortBy, sortOrder]);
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-semibold">Medical Records</h2>
-        <ButtonPrimary>Add New Record</ButtonPrimary>
+        <ButtonPrimary onClick={() => setShowUploadModal(true)}>
+          Add New Record
+        </ButtonPrimary>
       </div>
-      
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white rounded-lg overflow-hidden">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Doctor</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Diagnosis</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Prescription</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notes</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {records.map((record) => (
-              <tr key={record.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{record.date}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{record.doctor}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{record.diagnosis}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{record.prescription}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{record.notes}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+
+      <div className="flex flex-wrap gap-4 items-center justify-between bg-white p-4 rounded-lg">
+        <div className="flex gap-2">
+          <button
+            onClick={() => handleViewModeChange('list')}
+            className={`p-2 rounded ${viewMode === 'list' ? 'bg-primary-100' : 'bg-gray-100'}`}
+          >
+            <ViewListIcon className="h-5 w-5" />
+          </button>
+          <button
+            onClick={() => handleViewModeChange('grid')}
+            className={`p-2 rounded ${viewMode === 'grid' ? 'bg-primary-100' : 'bg-gray-100'}`}
+          >
+            <ViewGridIcon className="h-5 w-5" />
+          </button>
+        </div>
+
+        <div className="flex gap-4">
+          <input
+            type="text"
+            placeholder="Filter records..."
+            className="px-4 py-2 border rounded-lg"
+            value={filterText}
+            onChange={handleFilterChange}
+          />
+          
+          <select
+            className="px-4 py-2 border rounded-lg"
+            value={`${sortBy}-${sortOrder}`}
+            onChange={(e) => handleSortChange(e.target.value)}
+          >
+            <option value="date-desc">Date (Newest)</option>
+            <option value="date-asc">Date (Oldest)</option>
+            <option value="doctor-asc">Doctor (A-Z)</option>
+            <option value="doctor-desc">Doctor (Z-A)</option>
+            <option value="diagnosis-asc">Diagnosis (A-Z)</option>
+            <option value="diagnosis-desc">Diagnosis (Z-A)</option>
+          </select>
+        </div>
       </div>
-      
-      {records.length === 0 && (
+
+      <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4' : 'space-y-4'}>
+        {viewMode === 'grid' ? (
+          filteredAndSortedRecords.map((record) => (
+            <RecordCard key={record.id} record={record} />
+          ))
+        ) : (
+          <RecordList records={filteredAndSortedRecords} />
+        )}
+      </div>
+
+      {filteredAndSortedRecords.length === 0 && (
         <div className="text-center py-8 text-gray-500">
           No medical records found
         </div>
       )}
+
+      <UploadModal 
+        isOpen={showUploadModal} 
+        onClose={() => setShowUploadModal(false)} 
+      />
     </div>
   );
 };
