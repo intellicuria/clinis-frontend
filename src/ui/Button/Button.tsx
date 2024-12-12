@@ -59,7 +59,7 @@ const Button: FC<ButtonProps> = ({
       break;
   }
 
-  let CLASSES = `nc-Button flex-shrink-0 relative h-auto inline-flex items-center justify-center rounded-xl transition-colors border-transparent ${colors} ${fontSize}  ${
+  let CLASSES = `nc-Button flex-shrink-0 relative h-auto inline-flex items-center justify-center rounded-full transition-colors border-transparent ${colors} ${fontSize} ${sizeClass} ${className} ${
     disabled ? " pointer-events-none opacity-50 " : ""
   } `;
 
@@ -68,7 +68,7 @@ const Button: FC<ButtonProps> = ({
       <Link
         href={href}
         target={targetBlank ? "_blank" : "_self"}
-        className={`${CLASSES} bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-lg hover:shadow-xl `}
+        className={`${CLASSES} `}
         onClick={onClick}
         type={type}
       >
@@ -81,7 +81,7 @@ const Button: FC<ButtonProps> = ({
   return (
     <button
       disabled={disabled || loading}
-      className={`${CLASSES} bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-lg hover:shadow-xl`}
+      className={`${CLASSES}`}
       onClick={onClick}
       type={type}
     >

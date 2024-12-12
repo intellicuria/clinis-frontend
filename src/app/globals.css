@@ -55,15 +55,8 @@
 
 @layer components {
   .main-container {
-    max-width: min(1600px, 95%);
+    max-width: 1600px;
     margin: 0 auto;
-    padding: 0 1rem;
-  }
-}
-
-@media (max-width: 768px) {
-  .main-container {
-    padding: 0 0.75rem;
   }
 }
 

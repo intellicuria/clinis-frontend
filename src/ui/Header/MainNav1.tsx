@@ -42,7 +42,7 @@ const MainNav1: FC<MainNav1Props> = ({}) => {
   return (
     <div className="nc-MainNav1 select-none relative z-10 bg-white dark:bg-slate-900 ">
       <div className="container">
-        <div className="h-auto min-h-[5rem] py-3 md:py-5 flex justify-between items-center gap-4">
+        <div className="h-20 py-5 flex justify-between items-center">
           <div className="flex items-center lg:hidden flex-1">
             <MenuBar />
           </div>
