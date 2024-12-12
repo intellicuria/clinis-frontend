@@ -18,6 +18,16 @@ const nextConfig = {
           has: [
             {
               type: 'host',
+              value: 'clinis.io',
+            },
+          ],
+          destination: '/:path*',
+        },
+        {
+          source: '/:path*',
+          has: [
+            {
+              type: 'host',
               value: '(?<subdomain>.*?)\\.[^\\.]+\\.[^\\.]+$',
             },
           ],
