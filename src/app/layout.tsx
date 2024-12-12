@@ -53,9 +53,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={poppins.className}>
-      <body className="main-container scroll-smooth dark:bg-[#111827]">
+      <body className="main-container scroll-smooth bg-white dark:bg-neutral-900">
         <ProviderWrapper>
-          <div className="bg-[#f8f8f8] text-base dark:bg-neutral-900/95 text-neutral-900 dark:text-neutral-200">
+          <div className="bg-white text-base dark:bg-neutral-900 text-neutral-900 dark:text-neutral-200">
             <ToastContainer />
 
             <SiteHeader />
