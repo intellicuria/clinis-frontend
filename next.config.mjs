@@ -30,11 +30,6 @@ const nextConfig = {
   },
   typescript: {
     ignoreBuildErrors: true,
-  },
-  assetPrefix: process.env.NODE_ENV === 'production' ? '.' : '',
-  webpack: (config) => {
-    config.resolve.fallback = { fs: false };
-    return config;
   }
 }
 
