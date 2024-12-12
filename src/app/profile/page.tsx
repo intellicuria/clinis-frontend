@@ -32,9 +32,6 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState<PatientProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("overview");
-  const [isGridView, setIsGridView] = useState(true);
-  const [uploading, setUploading] = useState(false);
-  const [records, setRecords] = useState([]);
 
   useEffect(() => {
     fetchProfileData();
@@ -91,7 +88,13 @@ export default function ProfilePage() {
     setUploading(false);
   };
 
-  const renderMedicalRecords = () => (
+  import MedicalRecordsTab from './components/MedicalRecordsTab';
+
+// ... rest of the imports
+
+const renderMedicalRecords = () => (
+  <MedicalRecordsTab />
+);
     <div className="space-y-6">
       <div className="flex justify-between items-center mb-6">
         <div className="flex gap-4">
