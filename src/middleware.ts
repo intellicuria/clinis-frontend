@@ -6,8 +6,8 @@ export function middleware(request: NextRequest) {
   const url = request.nextUrl
   const hostname = request.headers.get('host') || ''
   
-  // Allow preview URLs
-  if (hostname.includes('vercel.app') || hostname.includes('replit.dev')) {
+  // Allow Replit preview URLs to work normally
+  if (hostname.includes('replit.dev')) {
     return NextResponse.next()
   }
 
