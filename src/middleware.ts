@@ -2,7 +2,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-export function middleware(request: NextRequest) {
+const middleware = (request: NextRequest) => {
   const url = request.nextUrl
   const hostname = request.headers.get('host') || ''
   
@@ -26,8 +26,9 @@ export function middleware(request: NextRequest) {
     }
 
     if (!isPrimaryDomain) {
-    const newUrl = new URL(`/doctor/${subdomain}`, request.url)
-    return NextResponse.rewrite(newUrl)
+      const newUrl = new URL(`/doctor/${subdomain}`, request.url)
+      return NextResponse.rewrite(newUrl)
+    }
   }
 
   return NextResponse.next()
@@ -38,3 +39,5 @@ export const config = {
     '/((?!api|favicon.ico|images).*)',
   ],
 }
+
+export default middleware
