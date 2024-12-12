@@ -44,17 +44,35 @@ export default function ProfilePage() {
       const token = localStorage.getItem('token');
       if (!token) {
         toast.error("Please login to view profile");
+        router.push('/login');
         return;
       }
       const response = await getPatientProfile(token);
       if (response?.data?.status) {
-        setProfile(response.data.data);
+        const profileData = response.data.data;
+        setProfile({
+          id: profileData.id,
+          fullname: profileData.fullname || '',
+          email: profileData.email || '',
+          phone_number: profileData.phone_number || '',
+          gender: profileData.gender || '',
+          age: profileData.age || 0,
+          profile_image: profileData.profile_image || '/images/avatar.svg',
+          medical_history: profileData.medical_history || [],
+          allergies: profileData.allergies || [],
+          height: profileData.height || 0,
+          weight: profileData.weight || 0,
+          blood_group: profileData.blood_group || ''
+        });
       } else {
         toast.error(response?.data?.message || "Failed to fetch profile data");
       }
     } catch (error: any) {
       console.error("Error fetching profile:", error);
       toast.error(error?.response?.data?.message || "Error loading profile data");
+      if (error?.response?.status === 401) {
+        router.push('/login');
+      }
     } finally {
       setLoading(false);
     }
