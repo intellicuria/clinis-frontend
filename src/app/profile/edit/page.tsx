@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -7,8 +6,12 @@ import ButtonPrimary from "@/ui/Button/ButtonPrimary";
 import Image from "next/image";
 import Input from "@/ui/Input/Input";
 import { useRouter } from "next/navigation";
-import { getPatientProfile, updatePatientProfile, updateProfileImage } from "@/lib/actions/PatientService";
-import toast from 'react-hot-toast';
+import {
+  getPatientProfile,
+  updatePatientProfile,
+  updateProfileImage,
+} from "@/lib/actions/PatientService";
+import toast from "react-hot-toast";
 
 export default function EditProfilePage() {
   const router = useRouter();
@@ -35,14 +38,10 @@ export default function EditProfilePage() {
   const fetchProfileData = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      if (!token) {
-        toast.error("Please login to edit profile");
-        return;
-      }
-      const response = await getPatientProfile(token);
+
+      const response = await getPatientProfile();
       if (response?.data?.status) {
-        const data = response.data.data;
+        const data = response.data;
         setFormData({
           fullname: data.fullname || "",
           email: data.email || "",
@@ -61,7 +60,9 @@ export default function EditProfilePage() {
       }
     } catch (error: any) {
       console.error("Error fetching profile:", error);
-      toast.error(error?.response?.data?.message || "Failed to fetch profile data");
+      toast.error(
+        error?.response?.data?.message || "Failed to fetch profile data",
+      );
     } finally {
       setLoading(false);
     }
@@ -81,11 +82,21 @@ export default function EditProfilePage() {
       if (response.status) {
         // Upload image if selected
         if (imageFile) {
+        try {
           const formDataImg = new FormData();
-          formDataImg.append('profile_image', imageFile);
-          await updateProfileImage(formDataImg);
+          formDataImg.append("profile_image", imageFile);
+          const imageResponse = await updateProfileImage(formDataImg);
+          if (!imageResponse.status) {
+            toast.error("Failed to upload image");
+            return;
+          }
+        } catch (error) {
+          console.error("Image upload error:", error);
+          toast.error("Error uploading image");
+          return;
         }
-        
+      }
+
         toast.success("Profile updated successfully");
         router.push("/profile");
       } else {
@@ -98,7 +109,9 @@ export default function EditProfilePage() {
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
@@ -115,11 +128,15 @@ export default function EditProfilePage() {
     <div className="max-w-4xl mx-auto p-6">
       <div className="bg-white rounded-lg p-6 shadow-sm mb-6">
         <h1 className="text-2xl font-semibold mb-6">Edit Profile</h1>
-        
+
         <div className="flex items-center gap-4 mb-8">
           <div className="relative w-24 h-24">
             <Image
-              src={imageFile ? URL.createObjectURL(imageFile) : "/images/avatar.svg"}
+              src={
+                imageFile
+                  ? URL.createObjectURL(imageFile)
+                  : "/images/avatar.svg"
+              }
               alt="Profile"
               className="rounded-full"
               fill
