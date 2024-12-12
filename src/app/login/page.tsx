@@ -1,6 +1,6 @@
 
 "use client";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useAppDispatch } from "@/store";
 import { sendOTP, verifyOTP } from "@/lib/actions/AuthService";
 import { setUser, signInSuccess, setToken } from "@/store";
