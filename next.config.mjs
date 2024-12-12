@@ -43,7 +43,7 @@ const nextConfig = {
       },
     ]
   },
-  assetPrefix: 'https://clinis.io',
+  assetPrefix: process.env.NEXT_PUBLIC_ASSET_PREFIX || '',
   typescript: {
     ignoreBuildErrors: true,
   },
