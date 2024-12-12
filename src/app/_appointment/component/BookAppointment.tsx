@@ -97,31 +97,30 @@ const BookAppointment = () => {
         const body = { mobile_number: mobileNumber, otp: enteredOtp };
         const response: any = await verifyOTP(body);
         if (response.status) {
-        dispatch(
-          setUser({
-            id: response.data.id,
-            phone_number: response.data.phone_number,
-            fullname: response.data.fullname,
-            status: response.data.status,
-          })
-        );
-        dispatch(signInSuccess(response.data.token));
-        dispatch(setToken(response.data.token));
+          dispatch(
+            setUser({
+              id: response.data.id,
+              phone_number: response.data.phone_number,
+              fullname: response.data.fullname,
+              status: response.data.status,
+            })
+          );
+          dispatch(signInSuccess(response.data.token));
+          dispatch(setToken(response.data.token));
+          setIsOtpSent(true);
+          console.log(response);
+          setIsOtpVerified(true);
+        } else {
+          setIsOtpValid(false);
+        }
+      } catch (error: any) {
+        setIsOtpValid(false);
+        alert(error.message || "Failed to verify OTP. Please try again.");
       }
-      setIsOtpSent(true);
-      console.log(response);
-      setIsOtpVerified(true);
     } else {
       setIsOtpValid(false);
     }
-  } catch (error: any) {
-    setIsOtpValid(false);
-    alert(error.message || "Failed to verify OTP. Please try again.");
-  }
-} else {
-  setIsOtpValid(false);
-}
-};
+  };
 
   // Conditional rendering based on OTP verification
   if (isOtpVerified) {
