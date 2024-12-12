@@ -7,7 +7,11 @@ export function middleware(request: NextRequest) {
   const hostname = request.headers.get('host') || ''
   
   // Allow Replit preview URLs to work normally
-  if (hostname.includes('replit.dev')) {
+  if (hostname.includes('replit.dev') || hostname.includes('pike.replit.dev')) {
+    // Handle static files on Replit
+    if (url.pathname.includes('/_next/')) {
+      return NextResponse.next()
+    }
     return NextResponse.next()
   }
 
@@ -42,6 +46,6 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!api|favicon.ico|images).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico|images).*)',
   ],
 }
