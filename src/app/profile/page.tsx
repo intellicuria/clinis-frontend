@@ -3,6 +3,8 @@
 
 import React from 'react';
 import Image from 'next/image';
+import ButtonPrimary from '@/ui/Button/ButtonPrimary';
+import ButtonSecondary from '@/ui/Button/ButtonSecondary';
 
 export default function ProfilePage() {
   return (
@@ -26,12 +28,8 @@ export default function ProfilePage() {
               <span className="text-green-700 bg-green-50 px-3 py-1 rounded-md text-sm">245566742-2</span>
             </div>
             <div className="flex gap-3">
-              <button className="bg-blue-600 text-white px-6 py-2 rounded-md flex items-center gap-2">
-                <span>Call</span>
-              </button>
-              <button className="bg-blue-600 text-white px-6 py-2 rounded-md flex items-center gap-2">
-                <span>Schedule Visit</span>
-              </button>
+              <ButtonPrimary>Call</ButtonPrimary>
+              <ButtonSecondary>Schedule Visit</ButtonSecondary>
             </div>
           </div>
         </div>
