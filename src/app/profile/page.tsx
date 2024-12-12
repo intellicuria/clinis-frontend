@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -8,8 +7,11 @@ import ButtonSecondary from "@/ui/Button/ButtonSecondary";
 import Calendar from "@/ui/Calendar/Calendar";
 import { useAppSelector } from "@/store";
 import Skeleton from "@/ui/Skeleton/Skeleton";
-import toast from 'react-hot-toast';
-import { getPatientProfile, getPatientRecords } from "@/lib/actions/PatientService";
+import toast from "react-hot-toast";
+import {
+  getPatientProfile,
+  getPatientRecords,
+} from "@/lib/actions/PatientService";
 
 interface PatientProfile {
   id: number;
@@ -33,45 +35,41 @@ export default function ProfilePage() {
   const { user } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
-    if (user?.id) {
-      fetchProfileData();
-    }
-  }, [user]);
+    fetchProfileData();
+  }, []);
 
   const fetchProfileData = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token');
-      if (!token) {
-        toast.error("Please login to view profile");
-        router.push('/login');
-        return;
-      }
-      const response = await getPatientProfile(token);
-      if (response?.data?.status) {
-        const profileData = response.data.data;
+      const token = localStorage.getItem("token");
+
+      const response = await getPatientProfile();
+      if (response?.status) {
+        const profileData = response.data;
         setProfile({
           id: profileData.id,
-          fullname: profileData.fullname || '',
-          email: profileData.email || '',
-          phone_number: profileData.phone_number || '',
-          gender: profileData.gender || '',
+          fullname: profileData.fullname || "",
+          email: profileData.email || "",
+          phone_number: profileData.phone_number || "",
+          gender: profileData.gender || "",
           age: profileData.age || 0,
-          profile_image: profileData.profile_image || '/images/avatar.svg',
+          profile_image: profileData.profile_image || "/images/avatar.svg",
           medical_history: profileData.medical_history || [],
           allergies: profileData.allergies || [],
           height: profileData.height || 0,
           weight: profileData.weight || 0,
-          blood_group: profileData.blood_group || ''
+          blood_group: profileData.blood_group || "",
         });
       } else {
-        toast.error(response?.data?.message || "Failed to fetch profile data");
+        toast.error(response?.message || "Failed to fetch profile data");
       }
     } catch (error: any) {
       console.error("Error fetching profile:", error);
-      toast.error(error?.response?.data?.message || "Error loading profile data");
+      toast.error(
+        error?.response?.data?.message || "Error loading profile data",
+      );
       if (error?.response?.status === 401) {
-        router.push('/login');
+        router.push("/login");
       }
     } finally {
       setLoading(false);
@@ -113,17 +111,21 @@ export default function ProfilePage() {
           </div>
           <div>
             <p className="text-sm text-gray-600">Height/Weight</p>
-            <p className="font-medium">{profile?.height}cm / {profile?.weight}kg</p>
+            <p className="font-medium">
+              {profile?.height}cm / {profile?.weight}kg
+            </p>
           </div>
         </div>
       </div>
-      
+
       <div className="bg-white p-6 rounded-lg shadow">
         <h3 className="text-lg font-semibold mb-4">Medical History</h3>
         {profile?.medical_history && profile.medical_history.length > 0 ? (
           <ul className="list-disc pl-5">
             {profile.medical_history.map((item, index) => (
-              <li key={index} className="text-gray-700">{item}</li>
+              <li key={index} className="text-gray-700">
+                {item}
+              </li>
             ))}
           </ul>
         ) : (
@@ -136,7 +138,10 @@ export default function ProfilePage() {
         <div className="flex flex-wrap gap-2">
           {profile?.allergies && profile.allergies.length > 0 ? (
             profile.allergies.map((allergy, index) => (
-              <span key={index} className="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm">
+              <span
+                key={index}
+                className="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm"
+              >
                 {allergy}
               </span>
             ))
@@ -169,11 +174,13 @@ export default function ProfilePage() {
                 ID: {profile?.id}
               </span>
             </div>
-            <div className="flex gap-3">
-              <ButtonPrimary onClick={() => window.location.href = '/profile/edit'}>
-                Edit Profile
-              </ButtonPrimary>
-              <ButtonSecondary>Download Records</ButtonSecondary>
+            <div className="space-y-3">
+              <Link href="/profile/edit">
+                <ButtonPrimary className="w-full">Edit Profile</ButtonPrimary>
+              </Link>
+              <Link href="/profile/medical-records">
+                <ButtonPrimary className="w-full">Medical Records</ButtonPrimary>
+              </Link>
             </div>
           </div>
         </div>
