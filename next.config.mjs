@@ -11,34 +11,6 @@ const nextConfig = {
     ],
     unoptimized: true,
   },
-  assetPrefix: process.env.NODE_ENV === 'production' ? '.' : '',
-  output: 'export',
-  async rewrites() {
-    return {
-      beforeFiles: [
-        {
-          source: '/:path*',
-          has: [
-            {
-              type: 'host',
-              value: 'clinis.io',
-            },
-          ],
-          destination: '/:path*',
-        },
-        {
-          source: '/:path*',
-          has: [
-            {
-              type: 'host',
-              value: '(?<subdomain>.*?)\\.[^\\.]+\\.[^\\.]+$',
-            },
-          ],
-          destination: '/doctor/:subdomain/:path*',
-        },
-      ],
-    }
-  },
   async headers() {
     return [
       {
