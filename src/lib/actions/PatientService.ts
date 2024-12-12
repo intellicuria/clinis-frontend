@@ -4,10 +4,10 @@ import { Response } from "@/types/module.types";
 import ClinisioApiService from "./ClinisioApiService";
 const API_KEY = "123";
 
-export async function getPatientProfile() {
+export async function getPatientProfile(token?: string) {
   const headers = { 
     apikey: API_KEY,
-    Authorization: `Bearer ${localStorage.getItem('token')}`
+    Authorization: `Bearer ${token || localStorage.getItem('token')}`
   };
   const url = "/patient/me";
   return ClinisioApiService.fetchData({ 

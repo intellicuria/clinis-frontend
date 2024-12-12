@@ -35,7 +35,12 @@ export default function EditProfilePage() {
   const fetchProfileData = async () => {
     try {
       setLoading(true);
-      const response = await getPatientProfile();
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast.error("Please login to edit profile");
+        return;
+      }
+      const response = await getPatientProfile(token);
       if (response?.data?.status) {
         const data = response.data.data;
         setFormData({

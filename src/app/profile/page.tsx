@@ -41,7 +41,12 @@ export default function ProfilePage() {
   const fetchProfileData = async () => {
     try {
       setLoading(true);
-      const response = await getPatientProfile();
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast.error("Please login to view profile");
+        return;
+      }
+      const response = await getPatientProfile(token);
       if (response?.data?.status) {
         setProfile(response.data.data);
       } else {
