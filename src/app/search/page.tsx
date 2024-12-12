@@ -65,15 +65,14 @@ const PageSearch = () => {
 
   useEffect(() => {
     const fetchDoctorDetails = async (page: number) => {
+      if (!searchText?.trim()) return;
+      
       setLoadingDoctors(true);
       setErrorDoctors(false);
       try {
-        const doctorResponse = await searchDoctors<{
-          status: boolean;
-          data: { result: DoctorData[]; pagination: { totalPages: number } };
-        }>(searchText, location, page);
+        const doctorResponse = await searchDoctors<SearchResponse>(searchText, location, page, 10);
 
-        if (doctorResponse.data) {
+        if (doctorResponse.status && doctorResponse.data) {
           setDoctorData(doctorResponse.data.result);
           setDoctorsTotalPages(doctorResponse.data.pagination.totalPages);
         }
@@ -82,23 +81,23 @@ const PageSearch = () => {
         setErrorDoctors(true);
       } finally {
         setLoadingDoctors(false);
+        setIsSearching(false);
       }
     };
 
     fetchDoctorDetails(doctorsPage);
-  }, [doctorsPage, searchText]);
+  }, [doctorsPage, searchText, location]);
 
   useEffect(() => {
     const fetchOrgDetails = async (page: number) => {
+      if (!searchText?.trim()) return;
+
       setLoadingOrganizations(true);
       setErrorOrganizations(false);
       try {
-        const orgResponse = await searchOrganization<{
-          status: boolean;
-          data: { result: DoctorData[]; pagination: { totalPages: number } };
-        }>(searchText, location, page);
+        const orgResponse = await searchOrganization<SearchResponse>(searchText, location, page, 10);
 
-        if (orgResponse.data) {
+        if (orgResponse.status && orgResponse.data) {
           setOrgData(orgResponse.data.result);
           setOrgTotalPages(orgResponse.data.pagination.totalPages);
         }
@@ -107,11 +106,12 @@ const PageSearch = () => {
         setErrorOrganizations(true);
       } finally {
         setLoadingOrganizations(false);
+        setIsSearching(false);
       }
     };
 
     fetchOrgDetails(orgPage);
-  }, [orgPage, searchText]);
+  }, [orgPage, searchText, location]);
 
   const handleDoctorsPageChange = (page: number) => {
     setDoctorsPage(page);

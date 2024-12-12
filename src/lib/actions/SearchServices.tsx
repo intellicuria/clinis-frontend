@@ -7,13 +7,14 @@ const API_KEY = "123";
 export async function searchDoctors<T>(
   searchText: string | null,
   location: string | null,
-  page?: number
+  page: number = 1,
+  limit: number = 10
 ): Promise<T> {
   const headers = {
     apikey: API_KEY,
   };
 
-  const url = `/search/clinis/patient?searchText=${searchText}&location=${location}&page=${page}`;
+  const url = `/search/clinis/patient?searchText=${searchText}&location=${location}&page=${page}&limit=${limit}`;
   const axiosConfig: AxiosRequestConfig = {
     url,
     method: "POST",
@@ -23,23 +24,23 @@ export async function searchDoctors<T>(
 
   try {
     const response = await ClinisioApiService.fetchData<T>(axiosConfig);
-    // console.log(response.data);
     return response.data;
   } catch (error) {
-    console.error("Error fetching modules:", error);
+    console.error("Error fetching doctors:", error);
     throw error;
   }
 }
 export async function searchOrganization<T>(
   searchText: string | null,
   location: string | null,
-  page?: number
+  page: number = 1,
+  limit: number = 10
 ): Promise<T> {
   const headers = {
     apikey: API_KEY,
   };
 
-  const url = `/search/clinis/organization?searchText=${searchText}&location=${location}&page=${page}`;
+  const url = `/search/clinis/organization?searchText=${searchText}&location=${location}&page=${page}&limit=${limit}`;
   const axiosConfig: AxiosRequestConfig = {
     url,
     method: "POST",
@@ -49,10 +50,21 @@ export async function searchOrganization<T>(
 
   try {
     const response = await ClinisioApiService.fetchData<T>(axiosConfig);
-    // console.log(response.data);
     return response.data;
   } catch (error) {
-    console.error("Error fetching modules:", error);
+    console.error("Error fetching organizations:", error);
     throw error;
   }
+}
+
+export interface SearchResponse {
+  status: boolean;
+  data: {
+    result: any[];
+    pagination: {
+      totalPages: number;
+      currentPage: number;
+      totalResults: number;
+    };
+  };
 }
