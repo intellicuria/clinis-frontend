@@ -1,7 +1,7 @@
 
-import React, { useState } from 'react';
-import { Button } from '@/ui/Button/Button';
-import { ViewListIcon, ViewGridIcon } from '@heroicons/react/24/outline';
+import React, { useState } from "react";
+import Button from "@/ui/Button/ButtonPrimary";
+import { ViewListIcon, ViewGridIcon } from "@heroicons/react/24/outline";
 
 const MedicalRecordsTab = () => {
   const [isGridView, setIsGridView] = useState(true);
@@ -34,11 +34,10 @@ const MedicalRecordsTab = () => {
         <div className="flex gap-4">
           <Button
             onClick={() => setIsGridView(!isGridView)}
-            pattern="third"
             className="flex items-center gap-2"
           >
             {isGridView ? <ViewListIcon className="h-5 w-5" /> : <ViewGridIcon className="h-5 w-5" />}
-            {isGridView ? 'List View' : 'Grid View'}
+            {isGridView ? "List View" : "Grid View"}
           </Button>
           <label className="relative">
             <input
@@ -48,14 +47,14 @@ const MedicalRecordsTab = () => {
               onChange={handleUpload}
               className="hidden"
             />
-            <Button pattern="primary" disabled={uploading}>
+            <Button disabled={uploading}>
               {uploading ? (
                 <div className="flex items-center gap-2">
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
                   Uploading...
                 </div>
               ) : (
-                'Upload Records'
+                "Upload Records"
               )}
             </Button>
           </label>
@@ -68,14 +67,14 @@ const MedicalRecordsTab = () => {
           <p className="text-sm text-gray-400 mt-2">Upload your medical records to keep track of your health history.</p>
         </div>
       ) : (
-        <div className={`${isGridView ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-4'}`}>
+        <div className={`${isGridView ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" : "space-y-4"}`}>
           {records.map((record) => (
             <div
               key={record.id}
               className={`bg-white rounded-lg shadow-sm border border-gray-200 transition-all hover:shadow-md
-                ${isGridView ? 'p-6' : 'p-4 flex items-center justify-between'}`}
+                ${isGridView ? "p-6" : "p-4 flex items-center justify-between"}`}
             >
-              <div className={isGridView ? 'space-y-4' : 'flex items-center gap-4 flex-1'}>
+              <div className={isGridView ? "space-y-4" : "flex items-center gap-4 flex-1"}>
                 <div className="flex items-center gap-3">
                   <div className="bg-primary-50 p-3 rounded-lg">
                     <svg className="h-6 w-6 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -97,13 +96,12 @@ const MedicalRecordsTab = () => {
                   </div>
                 )}
               </div>
-              <div className={`${isGridView ? 'mt-4 pt-4 border-t' : ''} flex justify-end gap-2`}>
-                <Button onClick={() => window.open(record.url)} pattern="third">
+              <div className={`${isGridView ? "mt-4 pt-4 border-t" : ""} flex justify-end gap-2`}>
+                <Button onClick={() => window.open(record.url)}>
                   View
                 </Button>
                 <Button
                   onClick={() => setRecords(records.filter(r => r.id !== record.id))}
-                  pattern="third"
                   className="text-red-600 hover:text-red-700"
                 >
                   Delete
