@@ -1,6 +1,8 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Tab } from '@headlessui/react';
+import { fetchAppointments } from '@/lib/actions/AppointmentService';
+import { useAppSelector } from '@/store';
 
 type Appointment = {
   id: string;
@@ -14,26 +16,25 @@ type Appointment = {
 
 const AppointmentsTab = () => {
   const [selectedTab, setSelectedTab] = useState('upcoming');
-  const [appointments] = useState<Appointment[]>([
-    {
-      id: '1',
-      date: new Date(2024, 3, 28),
-      time: '09:00 - 09:30',
-      title: '30min call meeting Peer <> Leslie',
-      location: 'Online',
-      participants: ['Dr. Peer', 'Leslie'],
-      status: 'upcoming'
-    },
-    {
-      id: '2',
-      date: new Date(2024, 3, 30),
-      time: '15:20 - 16:20',
-      title: 'Livn Product Demo',
-      location: 'Wework Paris',
-      participants: ['Team A', 'Team B'],
-      status: 'upcoming'
-    },
-  ]);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { id } = useAppSelector((state) => state.auth.user);
+
+  useEffect(() => {
+    const loadAppointments = async () => {
+      try {
+        setLoading(true);
+        const response = await fetchAppointments(id);
+        setAppointments(response);
+      } catch (error) {
+        console.error('Error fetching appointments:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadAppointments();
+  }, [id]);
 
   const tabs = ['Upcoming', 'Pending', 'Recurring', 'Past', 'Cancelled'];
 
@@ -42,11 +43,19 @@ const AppointmentsTab = () => {
   );
 
   const formatDate = (date: Date) => {
-    const day = date.getDate();
-    const weekday = date.toLocaleDateString('en-US', { weekday: 'short' });
-    const month = date.toLocaleDateString('en-US', { month: 'short' });
+    const day = new Date(date).getDate();
+    const weekday = new Date(date).toLocaleDateString('en-US', { weekday: 'short' });
+    const month = new Date(date).toLocaleDateString('en-US', { month: 'short' });
     return { day, weekday, month };
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -105,6 +114,11 @@ const AppointmentsTab = () => {
                     </div>
                   );
                 })}
+                {filteredAppointments.length === 0 && (
+                  <div className="text-center py-8 text-gray-500">
+                    No {tab.toLowerCase()} appointments found
+                  </div>
+                )}
               </Tab.Panel>
             ))}
           </Tab.Panels>
