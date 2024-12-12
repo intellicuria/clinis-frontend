@@ -18,7 +18,7 @@ const nextConfig = {
           has: [
             {
               type: 'host',
-              value: '(?<subdomain>[^.]+)\.([^.]+\.[^.]+)$',
+              value: '(?<subdomain>.*?)\\.[^\\.]+\\.[^\\.]+$',
             },
           ],
           destination: '/doctor/:subdomain/:path*',
