@@ -26,7 +26,16 @@ export default function AvatarDropdown() {
     dispatch(setUser({}));
   };
 
-  if (!signedIn) return null;
+  if (!signedIn) {
+    return (
+      <Link
+        href="/login"
+        className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
+      >
+        Login
+      </Link>
+    );
+  }
   return (
     <div className="AvatarDropdown ">
       <Popover className="relative">
