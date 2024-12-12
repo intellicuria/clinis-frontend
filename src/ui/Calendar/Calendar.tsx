@@ -4,8 +4,31 @@
 import React, { useState } from 'react';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
 
-const Calendar = () => {
-  const [currentDate, setCurrentDate] = useState(new Date());
+interface CalendarProps {
+  onDateSelect?: (date: Date) => void;
+  initialDate?: Date;
+  minDate?: Date;
+  maxDate?: Date;
+  className?: string;
+  showEvents?: boolean;
+  events?: Array<{
+    title: string;
+    status: string;
+    time: string;
+    attendees?: number;
+  }>;
+}
+
+const Calendar = ({
+  onDateSelect,
+  initialDate = new Date(),
+  minDate,
+  maxDate,
+  className = "",
+  showEvents = true,
+  events = []
+}: CalendarProps) => {
+  const [currentDate, setCurrentDate] = useState(initialDate);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
   const getDaysInMonth = (date: Date) => {
@@ -19,16 +42,23 @@ const Calendar = () => {
   const { daysInMonth, firstDayOfMonth } = getDaysInMonth(currentDate);
 
   const goToPreviousMonth = () => {
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1));
+    const newDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1);
+    if (!minDate || newDate >= minDate) {
+      setCurrentDate(newDate);
+    }
   };
 
   const goToNextMonth = () => {
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1));
+    const newDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1);
+    if (!maxDate || newDate <= maxDate) {
+      setCurrentDate(newDate);
+    }
   };
 
   const handleDateClick = (day: number) => {
     const newDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
     setSelectedDate(newDate);
+    onDateSelect?.(newDate);
   };
 
   const isToday = (day: number) => {
@@ -47,7 +77,7 @@ const Calendar = () => {
   };
 
   return (
-    <div className="bg-white rounded-lg p-6 shadow-sm mb-6">
+    <div className={`bg-white rounded-lg p-6 shadow-sm mb-6 ${className}`}>
       <div className="flex justify-between items-center mb-6">
         <button 
           onClick={goToPreviousMonth}
@@ -95,26 +125,33 @@ const Calendar = () => {
         })}
       </div>
 
-      {selectedDate && (
-        <div className="mt-6 space-y-4">
+      {showEvents && selectedDate && (events.length > 0 ? events : [{
+        title: "Meeting Client",
+        status: "Upcoming",
+        time: "02:20 PM - 03:30 PM",
+        attendees: 2
+      }]).map((event, index) => (
+        <div key={index} className="mt-6 space-y-4">
           <div className="border rounded-lg p-4 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between mb-2">
-              <h3 className="font-medium">Meeting Client</h3>
+              <h3 className="font-medium">{event.title}</h3>
               <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
-                Upcoming
+                {event.status}
               </span>
             </div>
-            <div className="text-gray-600">02:20 PM - 03:30 PM</div>
-            <div className="flex items-center gap-2 mt-2">
-              <div className="flex -space-x-2">
-                <div className="w-8 h-8 rounded-full bg-gray-200 border-2 border-white"></div>
-                <div className="w-8 h-8 rounded-full bg-gray-300 border-2 border-white"></div>
+            <div className="text-gray-600">{event.time}</div>
+            {event.attendees && (
+              <div className="flex items-center gap-2 mt-2">
+                <div className="flex -space-x-2">
+                  <div className="w-8 h-8 rounded-full bg-gray-200 border-2 border-white"></div>
+                  <div className="w-8 h-8 rounded-full bg-gray-300 border-2 border-white"></div>
+                </div>
+                <span className="text-sm text-gray-600">+{event.attendees} People</span>
               </div>
-              <span className="text-sm text-gray-600">+2 People</span>
-            </div>
+            )}
           </div>
         </div>
-      )}
+      ))}
     </div>
   );
 };
