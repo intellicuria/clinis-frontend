@@ -11,7 +11,7 @@ const API_KEY = "123";
  * @param doctorId - The ID of the doctor to retrieve information for.
  * @returns A promise that resolves with the doctor information.
  */
-export async function getAllDoctor<T>(): Promise<{data: T[]}> {
+export async function getAllDoctor<T>(): Promise<T> {
   const headers = {
     apikey: API_KEY,
   };
@@ -26,13 +26,13 @@ export async function getAllDoctor<T>(): Promise<{data: T[]}> {
 
   try {
     const response = await ClinisioApiService.fetchData<T>(axiosConfig);
-    return { data: response.data || [] };
+    return response.data;
   } catch (error) {
     console.error("Error fetching doctor information:", error);
-    return { data: [] };
+    throw error;
   }
 }
-export async function getAllOrganizations<T>(): Promise<{data: T[]}> {
+export async function getAllOrganizations<T>(): Promise<T> {
   const headers = {
     apikey: API_KEY,
   };
@@ -47,10 +47,10 @@ export async function getAllOrganizations<T>(): Promise<{data: T[]}> {
 
   try {
     const response = await ClinisioApiService.fetchData<T>(axiosConfig);
-    return { data: response.data || [] };
+    return response.data;
   } catch (error) {
-    console.error("Error fetching organizations:", error);
-    return { data: [] };
+    console.error("Error fetching doctor information:", error);
+    throw error;
   }
 }
 export async function getDoctor<T>(username: string): Promise<T> {
@@ -68,10 +68,10 @@ export async function getDoctor<T>(username: string): Promise<T> {
 
   try {
     const response = await ClinisioApiService.fetchData<T>(axiosConfig);
-    return { data: response.data || [] };
+    return response.data;
   } catch (error) {
-    console.error("Error fetching organizations:", error);
-    return { data: [] };
+    console.error("Error fetching doctor information:", error);
+    throw error;
   }
 }
 
