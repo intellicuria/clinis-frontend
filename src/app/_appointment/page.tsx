@@ -21,7 +21,7 @@ export default function AppointmentPage() {
   }
 
   return (
-    <div className="bg-white h-full ml-5">
+    <div className="bg-white h-full md:ml-5 p-4 md:p-0">
       {showBookAppointment ? (
         <>{signedIn ? <Patient /> : <BookAppointment />}</>
       ) : showSlots ? (
