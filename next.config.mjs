@@ -1,6 +1,10 @@
+// @ts-check
 
-/** @type {import('next').NextConfig} */
+/**
+ * @type {import('next').NextConfig}
+ */
 const nextConfig = {
+  /* config options here */
   images: {
     domains: [
       "images.pexels.com",
@@ -10,44 +14,17 @@ const nextConfig = {
       "clinisio-backend.s3.ap-south-1.amazonaws.com",
     ],
   },
-  async rewrites() {
-    return {
-      beforeFiles: [
-        {
-          source: '/:path*',
-          has: [
-            {
-              type: 'host',
-              value: '(?<subdomain>.*?)\\.[^\\.]+\\.[^\\.]+$',
-            },
-          ],
-          destination: '/doctor/:subdomain/:path*',
-        },
-      ],
-    }
-  },
-  async headers() {
-    return [
-      {
-        source: '/:path*',
-        headers: [
-          {
-            key: 'Access-Control-Allow-Origin',
-            value: '*',
-          },
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
-        ],
-      },
-    ]
-  },
-  assetPrefix: process.env.NEXT_PUBLIC_ASSET_PREFIX || '',
   typescript: {
+    // !! WARN !!
+    // Dangerously allow production builds to successfully complete even if
+    // your project has type errors.
+    // !! WARN !!
     ignoreBuildErrors: true,
   },
-  output: 'standalone',
-}
+  // compiler: {
+  //   // Enables the styled-components SWC transform
+  //   styledComponents: true
+  // }
+};
 
-export default nextConfig
+export default nextConfig;
