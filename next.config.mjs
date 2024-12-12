@@ -35,10 +35,15 @@ const nextConfig = {
             key: 'Access-Control-Allow-Origin',
             value: '*',
           },
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
         ],
       },
     ]
   },
+  assetPrefix: 'https://clinis.io',
   typescript: {
     ignoreBuildErrors: true,
   },

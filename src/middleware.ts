@@ -5,12 +5,22 @@ import type { NextRequest } from 'next/server'
 export function middleware(request: NextRequest) {
   const url = request.nextUrl
   const hostname = request.headers.get('host') || ''
+  
+  // Redirect www to non-www
+  if (hostname.startsWith('www.')) {
+    return NextResponse.redirect(
+      `https://clinis.io${request.nextUrl.pathname}${request.nextUrl.search}`
+    )
+  }
+
   const subdomain = hostname.split('.')[0]
   const isPrimaryDomain = hostname === 'clinis.io' || hostname.includes('localhost') || hostname.includes('0.0.0.0')
 
-  // Handle static files differently
+  // For static files, redirect to main domain
   if (url.pathname.includes('/_next/')) {
-    return NextResponse.next()
+    return NextResponse.rewrite(
+      new URL(`https://clinis.io${url.pathname}${url.search}`, request.url)
+    )
   }
 
   if (!isPrimaryDomain && hostname.endsWith('clinis.io')) {
@@ -23,6 +33,6 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!api|_next/static|_next/image|favicon.ico|images).*)',
+    '/((?!api|favicon.ico|images).*)',
   ],
 }
