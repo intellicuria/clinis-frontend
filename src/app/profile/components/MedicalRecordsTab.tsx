@@ -1,18 +1,17 @@
-
 "use client";
 
 import React, { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { MedicalRecord } from "@/store/slices/medicalRecords/types";
-import { 
-  setViewMode, 
-  setSortBy, 
-  setSortOrder, 
+import {
+  setViewMode,
+  setSortBy,
+  setSortOrder,
   setFilterText,
-  addRecord 
+  addRecord,
 } from "@/store/slices/medicalRecords/medicalRecordsSlice";
 import ButtonPrimary from "@/ui/Button/ButtonPrimary";
-import { ViewListIcon, ViewGridIcon } from "@heroicons/react/24/outline";
+import ViewListIcon from "@heroicons/react/24/outline";
 import { RootState } from "@/store";
 import RecordCard from "./RecordCard";
 import RecordList from "./RecordList";
@@ -20,38 +19,47 @@ import UploadModal from "./UploadModal";
 
 const MedicalRecordsTab = () => {
   const dispatch = useDispatch();
-  const { 
-    records, 
-    viewMode, 
-    sortBy, 
-    sortOrder, 
-    filterText 
-  } = useSelector((state: RootState) => state.medicalRecords);
-  
+  const { records, viewMode, sortBy, sortOrder, filterText } = useSelector(
+    (state: RootState) => state.medicalRecords,
+  );
+
   const [showUploadModal, setShowUploadModal] = React.useState(false);
 
-  const handleViewModeChange = useCallback((mode: 'grid' | 'list') => {
-    dispatch(setViewMode(mode));
-  }, [dispatch]);
+  const handleViewModeChange = useCallback(
+    (mode: "grid" | "list") => {
+      dispatch(setViewMode(mode));
+    },
+    [dispatch],
+  );
 
-  const handleSortChange = useCallback((value: string) => {
-    const [newSortBy, newSortOrder] = value.split('-') as ['date' | 'doctor' | 'diagnosis', 'asc' | 'desc'];
-    dispatch(setSortBy(newSortBy));
-    dispatch(setSortOrder(newSortOrder));
-  }, [dispatch]);
+  const handleSortChange = useCallback(
+    (value: string) => {
+      const [newSortBy, newSortOrder] = value.split("-") as [
+        "date" | "doctor" | "diagnosis",
+        "asc" | "desc",
+      ];
+      dispatch(setSortBy(newSortBy));
+      dispatch(setSortOrder(newSortOrder));
+    },
+    [dispatch],
+  );
 
-  const handleFilterChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    dispatch(setFilterText(e.target.value));
-  }, [dispatch]);
+  const handleFilterChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      dispatch(setFilterText(e.target.value));
+    },
+    [dispatch],
+  );
 
   const filteredAndSortedRecords = React.useMemo(() => {
     return records
-      .filter(record => 
-        record.doctor.toLowerCase().includes(filterText.toLowerCase()) ||
-        record.diagnosis.toLowerCase().includes(filterText.toLowerCase())
+      .filter(
+        (record) =>
+          record.doctor.toLowerCase().includes(filterText.toLowerCase()) ||
+          record.diagnosis.toLowerCase().includes(filterText.toLowerCase()),
       )
       .sort((a, b) => {
-        const sortValue = sortOrder === 'asc' ? 1 : -1;
+        const sortValue = sortOrder === "asc" ? 1 : -1;
         return a[sortBy] > b[sortBy] ? sortValue : -sortValue;
       });
   }, [records, filterText, sortBy, sortOrder]);
@@ -68,16 +76,16 @@ const MedicalRecordsTab = () => {
       <div className="flex flex-wrap gap-4 items-center justify-between bg-white p-4 rounded-lg">
         <div className="flex gap-2">
           <button
-            onClick={() => handleViewModeChange('list')}
-            className={`p-2 rounded ${viewMode === 'list' ? 'bg-primary-100' : 'bg-gray-100'}`}
+            onClick={() => handleViewModeChange("list")}
+            className={`p-2 rounded ${viewMode === "list" ? "bg-primary-100" : "bg-gray-100"}`}
           >
-            <ViewListIcon className="h-5 w-5" />
+            k
           </button>
           <button
-            onClick={() => handleViewModeChange('grid')}
-            className={`p-2 rounded ${viewMode === 'grid' ? 'bg-primary-100' : 'bg-gray-100'}`}
+            onClick={() => handleViewModeChange("grid")}
+            className={`p-2 rounded ${viewMode === "grid" ? "bg-primary-100" : "bg-gray-100"}`}
           >
-            <ViewGridIcon className="h-5 w-5" />
+            l
           </button>
         </div>
 
@@ -89,7 +97,7 @@ const MedicalRecordsTab = () => {
             value={filterText}
             onChange={handleFilterChange}
           />
-          
+
           <select
             className="px-4 py-2 border rounded-lg"
             value={`${sortBy}-${sortOrder}`}
@@ -105,8 +113,14 @@ const MedicalRecordsTab = () => {
         </div>
       </div>
 
-      <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4' : 'space-y-4'}>
-        {viewMode === 'grid' ? (
+      <div
+        className={
+          viewMode === "grid"
+            ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+            : "space-y-4"
+        }
+      >
+        {viewMode === "grid" ? (
           filteredAndSortedRecords.map((record) => (
             <RecordCard key={record.id} record={record} />
           ))
@@ -121,9 +135,9 @@ const MedicalRecordsTab = () => {
         </div>
       )}
 
-      <UploadModal 
-        isOpen={showUploadModal} 
-        onClose={() => setShowUploadModal(false)} 
+      <UploadModal
+        isOpen={showUploadModal}
+        onClose={() => setShowUploadModal(false)}
       />
     </div>
   );

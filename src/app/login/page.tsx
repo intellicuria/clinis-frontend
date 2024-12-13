@@ -49,7 +49,7 @@ const Login = () => {
     setLoading(true);
     try {
       const response = await sendOTP({ mobile_number: mobileNumber });
-      if (response.data?.status) {
+      if (response.status) {
         setIsOtpSent(true);
         setIsOtpValid(true);
       } else {
@@ -73,8 +73,8 @@ const Login = () => {
         otp: enteredOtp 
       });
 
-      if (response.data?.status) {
-        const userData = response.data.data;
+      if (response.status) {
+        const userData = response.data;
         dispatch(setUser({
           id: userData.id,
           phone_number: userData.phone_number,
