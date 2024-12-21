@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useParams } from "next/navigation";
-import { DoctorProfile } from "./components";
+import { OrgProfile } from "./components";
 import AppointmentPage from "@/app/_appointment/page";
 
 export default function Page() {
@@ -14,7 +14,7 @@ export default function Page() {
   return (
     <div className="grid grid-cols-12 container">
       <div className="col-span-8 overflow-y-auto scrollbar-hide">
-        <DoctorProfile username={slug} />{" "}
+        <OrgProfile username={slug} />{" "}
       </div>
 
       <div className="col-span-4">

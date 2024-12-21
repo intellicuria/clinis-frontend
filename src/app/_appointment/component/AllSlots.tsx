@@ -21,7 +21,7 @@ export default function AllSlots({
     date: today,
   });
 
-  const { currentDoctor, selectedSlot, selectedWorkspace } = useAppSelector(
+  const { selectedSlot, selectedWorkspace, selectedDoctor } = useAppSelector(
     (state) => state.AppointmentList.data
   );
 
@@ -29,8 +29,10 @@ export default function AllSlots({
   const [loadingSlots, setLoadingSlots] = useState(false);
 
   useEffect(() => {
+    console.log(selectedDoctor);
+
     const fetchSlots = async () => {
-      if (!currentDoctor.id || !selectedWorkspace.value) {
+      if (!selectedDoctor.value || !selectedWorkspace.value) {
         return;
       }
 
@@ -43,7 +45,7 @@ export default function AllSlots({
         setLoadingSlots(true);
         const body = { date: isoDate };
         const response = await getSlots(
-          currentDoctor.id,
+          selectedDoctor.value,
           selectedWorkspace.value,
           body
         );
@@ -57,7 +59,7 @@ export default function AllSlots({
     };
 
     fetchSlots();
-  }, [currentDoctor, selectedWorkspace, selectedDay]);
+  }, [selectedDoctor, selectedWorkspace, selectedDay]);
 
   const daysContainerRef = useRef(null);
 

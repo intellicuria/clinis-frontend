@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { getDoctor } from "@/lib/actions/BookingApiService";
+import { getDoctor, getOrg } from "@/lib/actions/BookingApiService";
 import { set } from "lodash";
 
 interface DoctorData {
@@ -25,7 +25,9 @@ export type AppointmentState = {
   loading: boolean;
   allDoctors: DoctorDataArray;
   currentDoctor: DoctorData;
+  currentOrg: any;
   selectedWorkspace: any;
+  selectedDoctor: any;
   selectedSlot: any;
   selectedDate: string;
 };
@@ -33,9 +35,15 @@ const initialState: AppointmentState = {
   loading: false,
   allDoctors: [] as DoctorDataArray,
   currentDoctor: {} as DoctorData,
+  currentOrg: {} as any,
   selectedWorkspace: {
     label: "– select workspace –",
     description: "",
+    value: -1,
+  },
+  selectedDoctor: {
+    label: "– select doctor –",
+    speciality: [],
     value: -1,
   },
   selectedSlot: {} as any,
@@ -53,6 +61,16 @@ export const getDoctorDetails = createAsyncThunk(
     return response.data;
   }
 );
+export const getOrganizationDetails = createAsyncThunk(
+  SLICE_NAME + "/getOrganizationDetails",
+  async (username: string) => {
+    const response = await getOrg<{
+      data: DoctorData;
+    }>(username);
+
+    return response.data;
+  }
+);
 
 const ResearchSlice = createSlice({
   name: `${SLICE_NAME}/state`,
@@ -63,6 +81,9 @@ const ResearchSlice = createSlice({
     },
     setSelectedWorkspace: (state, action) => {
       state.selectedWorkspace = action.payload;
+    },
+    setSelectedDoctor: (state, action) => {
+      state.selectedDoctor = action.payload;
     },
     setSelectedSlot: (state, action) => {
       state.selectedSlot = action.payload;
@@ -79,6 +100,13 @@ const ResearchSlice = createSlice({
       })
       .addCase(getDoctorDetails.pending, (state) => {
         state.loading = true;
+      })
+      .addCase(getOrganizationDetails.fulfilled, (state, action) => {
+        state.loading = false;
+        state.currentOrg = action.payload;
+      })
+      .addCase(getOrganizationDetails.pending, (state) => {
+        state.loading = true;
       });
   },
 });
@@ -88,6 +116,7 @@ export const {
   setSelectedWorkspace,
   setSelectedSlot,
   setSelectedDate,
+  setSelectedDoctor,
 } = ResearchSlice.actions;
 
 export default ResearchSlice.reducer;

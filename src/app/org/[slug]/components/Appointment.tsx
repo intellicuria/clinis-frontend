@@ -3,13 +3,18 @@
 import React, { useState, useEffect } from "react";
 import Button from "@/ui/Button/Button";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/solid";
-import { getWorkspaces, getSlots } from "@/lib/actions/BookingApiService";
+import {
+  getOrgWorkspaces,
+  getSlots,
+  getWorkspaceDoctors,
+} from "@/lib/actions/BookingApiService";
 import {
   useAppSelector,
   setSelectedWorkspace,
   setSelectedSlot,
   setSelectedDate,
   useAppDispatch,
+  setSelectedDoctor,
 } from "../../../_appointment/store";
 
 export default function OrgAppointment({
@@ -21,11 +26,13 @@ export default function OrgAppointment({
   username: string;
   navigateToBookAppointment: any;
 }) {
-  const [isOpen, setIsOpen] = useState(false);
-  const { currentDoctor, selectedWorkspace, selectedSlot } = useAppSelector(
+  const [isWorkspaceOpen, setIsWorkspaceOpen] = useState(false);
+  const [isDoctorOpen, setIsDoctorOpen] = useState(false);
+  const { selectedDoctor, selectedWorkspace, selectedSlot } = useAppSelector(
     (state) => state?.AppointmentList?.data
   );
   const [workspaces, setWorkspaces] = useState<any[]>([]);
+  const [doctors, setDoctors] = useState<any[]>([]);
 
   const [slots, setSlots] = useState<any[]>([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
@@ -36,12 +43,9 @@ export default function OrgAppointment({
   useEffect(() => {
     const fetchWorkspaces = async () => {
       try {
-        const response = await getWorkspaces(username);
-        if (response?.status) {
-          setWorkspaces(response.data);
-        } else {
-          console.error("Error fetching workspaces:", response?.message);
-        }
+        const response = await getOrgWorkspaces(username);
+        console.log(response);
+        setWorkspaces(response.data);
       } catch (error) {
         console.error("Error fetching workspaces:", error);
       } finally {
@@ -51,9 +55,10 @@ export default function OrgAppointment({
 
     fetchWorkspaces();
   }, [username]);
+
   useEffect(() => {
     const fetchSlots = async () => {
-      if (!currentDoctor.id) {
+      if (!selectedDoctor.value) {
         return;
       }
 
@@ -64,7 +69,7 @@ export default function OrgAppointment({
         setLoadingSlots(true);
         const body = { date: isoDate };
         const response = await getSlots(
-          currentDoctor.id,
+          selectedDoctor.value,
           selectedWorkspace.value,
           body
         );
@@ -79,13 +84,39 @@ export default function OrgAppointment({
     };
 
     fetchSlots();
-  }, [currentDoctor, selectedWorkspace]);
+  }, [selectedDoctor]);
+  useEffect(() => {
+    const fetchWorkspaceDoctors = async () => {
+      if (!selectedWorkspace.value) {
+        return;
+      }
 
-  const toggleDropdown = () => setIsOpen(!isOpen);
+      try {
+        setLoadingSlots(true);
+        const response = await getWorkspaceDoctors(selectedWorkspace.value);
+        console.log(response);
+        setDoctors(response.data);
+      } catch (error) {
+        console.error("Error fetching workspaces:", error);
+      } finally {
+        setLoadingSlots(false);
+        // Perform cleanup if needed
+      }
+    };
+
+    fetchWorkspaceDoctors();
+  }, [selectedWorkspace]);
+
+  const toggleWorkspaceDropdown = () => setIsWorkspaceOpen(!isWorkspaceOpen);
+  const toggleDoctorDropdown = () => setIsDoctorOpen(!isDoctorOpen);
 
   const handleOptionClick = (option: any) => {
     dispatch(setSelectedWorkspace(option));
-    setIsOpen(false);
+    setIsWorkspaceOpen(false);
+  };
+  const handleDoctorClick = (option: any) => {
+    dispatch(setSelectedDoctor(option));
+    setIsDoctorOpen(false);
   };
 
   if (loading) {
@@ -104,7 +135,7 @@ export default function OrgAppointment({
       <div className="relative mt-4">
         <div
           className="p-2 px-3 border border-primary-300 text-primary-600 rounded-lg flex justify-between items-center cursor-pointer focus:outline-none focus:ring-2 focus:ring-purple-500"
-          onClick={toggleDropdown}
+          onClick={toggleWorkspaceDropdown}
         >
           <div>
             <span className="font-semibold">{selectedWorkspace.label}</span>
@@ -114,14 +145,14 @@ export default function OrgAppointment({
               </p>
             )}
           </div>
-          {isOpen ? (
+          {isWorkspaceOpen ? (
             <ChevronUpIcon className="w-5 h-5 text-gray-500" />
           ) : (
             <ChevronDownIcon className="w-5 h-5 text-gray-500" />
           )}
         </div>
 
-        {isOpen && (
+        {isWorkspaceOpen && (
           <div className="absolute top-full mt-1 max-h-[50vh] overflow-y-auto w-full bg-white border overflow-hidden border-gray-300 rounded-lg shadow-lg z-10">
             {workspaces.map((workspace: any) => (
               <div
@@ -138,6 +169,54 @@ export default function OrgAppointment({
                 <span className="font-semibold">{workspace.name}</span>
                 <p className="text-sm text-gray-500 line-clamp-1">
                   {workspace.about}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className="relative mt-4">
+        <div
+          className="p-2 px-3 border border-primary-300 text-primary-600 rounded-lg flex justify-between items-center cursor-pointer focus:outline-none focus:ring-2 focus:ring-purple-500"
+          onClick={toggleDoctorDropdown}
+        >
+          <div>
+            <span className="font-semibold">{selectedDoctor.label}</span>
+            {selectedDoctor.speciality && (
+              <p className="text-sm text-primary-500 mt-1 line-clamp-1">
+                {selectedDoctor.speciality.length > 0
+                  ? selectedDoctor.speciality.join(", ")
+                  : "No specializations available"}{" "}
+              </p>
+            )}
+          </div>
+          {isWorkspaceOpen ? (
+            <ChevronUpIcon className="w-5 h-5 text-gray-500" />
+          ) : (
+            <ChevronDownIcon className="w-5 h-5 text-gray-500" />
+          )}
+        </div>
+
+        {isDoctorOpen && selectedWorkspace.id !== -1 && (
+          <div className="absolute top-full mt-1 max-h-[50vh] overflow-y-auto w-full bg-white border overflow-hidden border-gray-300 rounded-lg shadow-lg z-10">
+            {doctors.map((doctor: any) => (
+              <div
+                key={doctor.id}
+                className="p-2 cursor-pointer hover:bg-primary-100"
+                onClick={() =>
+                  handleDoctorClick({
+                    label: doctor.name,
+                    speciality: doctor.speciality,
+                    value: doctor?.id,
+                  })
+                }
+              >
+                <span className="font-semibold">{doctor.name}</span>
+                <p className="text-sm text-gray-500 line-clamp-1">
+                  {doctor.speciality.length > 0
+                    ? doctor.speciality.join(", ")
+                    : "No specializations available"}
                 </p>
               </div>
             ))}

@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from "react";
 import ButtonPrimary from "@/ui/Button/ButtonPrimary";
 import { getOrg } from "@/lib/actions/BookingApiService";
+import reducer, {
+  getOrganizationDetails,
+  useAppDispatch,
+  useAppSelector,
+} from "@/app/_appointment/store";
+import { injectReducer } from "@/store";
+injectReducer("AppointmentList", reducer);
 
 interface OrganizationData {
   id: number;
@@ -16,23 +23,31 @@ interface OrganizationData {
   owners: string[];
 }
 
-const OrganizationProfile = ({ organizationId }: { organizationId: string }) => {
-  const [organizationData, setOrganizationData] = useState<OrganizationData | null>(null);
+const OrganizationProfile = ({ username }: { username: string }) => {
+  const organizationData = useAppSelector(
+    (state) => state.AppointmentList.data.currentOrg
+  );
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     const fetchOrganizationData = async () => {
       try {
         setLoading(true);
         // Use getOrg function to fetch the organization data
-        const data = await getOrg<OrganizationData>(organizationId, "2024-11-20"); // Adjust the date as needed
-        
+        dispatch(getOrganizationDetails(String(username)))
+          .unwrap()
+          .then((response) => {
+            console.log(response);
+          })
+          .catch((error) => {
+            console.log(error);
+          })
+          .finally(() => {
+            setLoading(false);
+          });
         // Log the fetched data
-        console.log("Fetched Organization Data:", data);
-        
-        // Update the state with fetched data
-        setOrganizationData(data);
         setLoading(false);
       } catch (err) {
         setError("Failed to fetch organization data");
@@ -41,13 +56,13 @@ const OrganizationProfile = ({ organizationId }: { organizationId: string }) => 
     };
 
     fetchOrganizationData();
-  }, [organizationId]);
+  }, [username]);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
 
   if (!organizationData) {
-    return <p>No data available.</p>; 
+    return <p>No data available.</p>;
   }
 
   return (
@@ -61,7 +76,9 @@ const OrganizationProfile = ({ organizationId }: { organizationId: string }) => 
             className="w-24 h-24 rounded-full"
           />
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold">{organizationData?.name || "N/A"}</h1>
+            <h1 className="text-2xl md:text-3xl font-bold">
+              {organizationData?.name || "N/A"}
+            </h1>
             <p className="text-lg md:text-xl text-gray-600">
               {organizationData?.description || "Description not available"}
             </p>
@@ -73,7 +90,9 @@ const OrganizationProfile = ({ organizationId }: { organizationId: string }) => 
             </p>
             <div className="flex mt-2 space-x-2">
               <span className="bg-blue-200 text-blue-700 px-3 py-1 rounded-md text-sm md:text-base font-semibold">
-                {organizationData?.website ? "VISIT WEBSITE" : "Website Not Available"}
+                {organizationData?.website
+                  ? "VISIT WEBSITE"
+                  : "Website Not Available"}
               </span>
             </div>
           </div>
@@ -85,7 +104,9 @@ const OrganizationProfile = ({ organizationId }: { organizationId: string }) => 
       <div className="p-4 rounded-lg bg-white shadow">
         <h2 className="font-semibold text-lg md:text-xl">RATING</h2>
         <p className="text-gray-700 mt-1 text-sm md:text-base">
-          {organizationData?.rating ? `${organizationData.rating} stars` : "Not Rated"}
+          {organizationData?.rating
+            ? `${organizationData.rating} stars`
+            : "Not Rated"}
         </p>
       </div>
 

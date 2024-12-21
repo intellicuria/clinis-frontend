@@ -4,6 +4,7 @@ import { getDoctor } from "@/lib/actions/BookingApiService";
 import { injectReducer } from "@/store";
 import reducer, {
   getDoctorDetails,
+  setSelectedDoctor,
   useAppDispatch,
   useAppSelector,
 } from "@/app/_appointment/store";
@@ -30,6 +31,13 @@ const DoctorProfile: React.FC<DoctorProfileProps> = ({ username }) => {
         .unwrap()
         .then((response) => {
           console.log(response);
+          dispatch(
+            setSelectedDoctor({
+              label: response.name,
+              description: response.about_youself,
+              value: response.id,
+            })
+          );
         })
         .catch((error) => {
           console.log(error);

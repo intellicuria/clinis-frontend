@@ -75,7 +75,7 @@ export async function getDoctor<T>(username: string): Promise<T> {
   }
 }
 
-export async function getWorkspaces<T>(doctorId: string): Promise<T> {
+export async function getDoctorWorkspaces<T>(doctorId: string): Promise<T> {
   const headers = {
     apikey: API_KEY,
   };

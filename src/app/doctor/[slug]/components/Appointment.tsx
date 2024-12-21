@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Button from "@/ui/Button/Button";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/solid";
-import { getWorkspaces, getSlots } from "@/lib/actions/BookingApiService";
+import { getDoctorWorkspaces, getSlots } from "@/lib/actions/BookingApiService";
 import {
   useAppSelector,
   setSelectedWorkspace,
@@ -36,7 +36,7 @@ export default function DoctorAppointment({
   useEffect(() => {
     const fetchWorkspaces = async () => {
       try {
-        const response = await getWorkspaces(username);
+        const response = await getDoctorWorkspaces(username);
         if (response?.status) {
           setWorkspaces(response.data);
         } else {

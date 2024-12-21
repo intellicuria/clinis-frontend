@@ -1,3 +1,3 @@
-import DoctorProfile from "./DoctorProfile";
+import OrgProfile from "./OrgProfile";
 
-export { DoctorProfile };
+export { OrgProfile };

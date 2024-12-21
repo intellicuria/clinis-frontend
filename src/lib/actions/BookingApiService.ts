@@ -75,7 +75,7 @@ export async function getDoctor<T>(username: string): Promise<T> {
   }
 }
 
-export async function getWorkspaces<T>(doctorId: string): Promise<T> {
+export async function getDoctorWorkspaces<T>(doctorId: string): Promise<T> {
   const headers = {
     apikey: API_KEY,
   };
@@ -98,13 +98,13 @@ export async function getWorkspaces<T>(doctorId: string): Promise<T> {
   }
 }
 
-export async function getOrg<T>(organizationId: string): Promise<T> {
+export async function getOrg<T>(username: string): Promise<T> {
   const headers = {
     apikey: API_KEY,
     "Content-Type": "application/json", // Ensure the body is sent as JSON
   };
 
-  const url = `${PROD_SERVER_URL}/organizations/clinis/org/${organizationId}`;
+  const url = `${PROD_SERVER_URL}/organizations/clinis/org/${username}`;
   const axiosConfig: AxiosRequestConfig = {
     url,
     method: "GET", // Change the method to POST
@@ -128,6 +128,28 @@ export async function getOrgWorkspaces<T>(organizationId: string): Promise<T> {
   };
 
   const url = `${PROD_SERVER_URL}/workspaces/clinis/org/get-workspaces/${organizationId}`;
+  const axiosConfig: AxiosRequestConfig = {
+    url,
+    method: "GET",
+    headers,
+    maxRedirects: 5,
+  };
+
+  try {
+    const response = await ClinisioApiService.fetchData<T>(axiosConfig);
+    console.log(response);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching workspaces:", error);
+    throw error;
+  }
+}
+export async function getWorkspaceDoctors<T>(workspaceId: string): Promise<T> {
+  const headers = {
+    apikey: API_KEY,
+  };
+
+  const url = `${PROD_SERVER_URL}/workspaces/clinis/get-doctors/${workspaceId}`;
   const axiosConfig: AxiosRequestConfig = {
     url,
     method: "GET",
