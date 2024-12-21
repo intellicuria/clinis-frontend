@@ -98,10 +98,7 @@ export async function getWorkspaces<T>(doctorId: string): Promise<T> {
   }
 }
 
-export async function getOrg<T>(
-  organizationId: string,
-  date: string
-): Promise<T> {
+export async function getOrg<T>(organizationId: string): Promise<T> {
   const headers = {
     apikey: API_KEY,
     "Content-Type": "application/json", // Ensure the body is sent as JSON
@@ -112,9 +109,7 @@ export async function getOrg<T>(
     url,
     method: "GET", // Change the method to POST
     headers,
-    data: {
-      date: date, // Pass the date in the request body
-    },
+
     maxRedirects: 5,
   };
 

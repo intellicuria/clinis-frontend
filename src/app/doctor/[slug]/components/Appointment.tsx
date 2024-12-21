@@ -10,9 +10,9 @@ import {
   setSelectedSlot,
   setSelectedDate,
   useAppDispatch,
-} from "../store";
+} from "../../../_appointment/store";
 
-export default function Appointment({
+export default function DoctorAppointment({
   setShowSlots,
   username,
   navigateToBookAppointment,
@@ -23,7 +23,7 @@ export default function Appointment({
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const { currentDoctor, selectedWorkspace, selectedSlot } = useAppSelector(
-    (state) => state.AppointmentList.data
+    (state) => state?.AppointmentList?.data
   );
   const [workspaces, setWorkspaces] = useState<any[]>([]);
 
