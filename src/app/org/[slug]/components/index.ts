@@ -1,5 +1,3 @@
-import Appointment from "./Appointment";
-import DoctorProfile from "./DoctorProfile";
-import AllSlots from "./AllSlots";
+import OrgProfile from "./OrgProfile";
 
-export { Appointment, DoctorProfile,AllSlots };
+export { OrgProfile };

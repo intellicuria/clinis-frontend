@@ -34,13 +34,12 @@ const Patient = () => {
   const { fullname, phone_number, id } = useAppSelector(
     (state) => state.auth.user
   );
-  const { selectedSlot, currentDoctor, selectedDate, selectedWorkspace } =
+  const { selectedSlot, selectedDoctor, selectedDate, selectedWorkspace } =
     AppSelector((state) => state.AppointmentList.data);
   const router = useRouter();
 
   const bookAppoint = async () => {
     console.log("Book Appointment");
-    console.log(selectedSlot, currentDoctor, selectedDate, selectedWorkspace);
 
     try {
       // Helper function to format time
@@ -81,7 +80,7 @@ const Patient = () => {
 
       const body = {
         patient_id: id,
-        doctorId: currentDoctor.id,
+        doctorId: selectedDoctor.value,
         workspace_id: selectedWorkspace.value,
         date: selectedDate,
         start_time: startTime,
@@ -112,7 +111,7 @@ const Patient = () => {
         </p>
         <p className="mt-3 text-sm font-medium">
           <span className="block text-gray-500">DOCTOR</span>
-          {currentDoctor.name}
+          {selectedDoctor.label}
         </p>
         <p className="mt-3 text-sm font-medium">
           <span className="block text-gray-500">CLINIC</span>

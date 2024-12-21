@@ -3,16 +3,16 @@
 import React, { useState, useEffect } from "react";
 import Button from "@/ui/Button/Button";
 import { ChevronDownIcon, ChevronUpIcon } from "@heroicons/react/24/solid";
-import { getWorkspaces, getSlots } from "@/lib/actions/BookingApiService";
+import { getDoctorWorkspaces, getSlots } from "@/lib/actions/BookingApiService";
 import {
   useAppSelector,
   setSelectedWorkspace,
   setSelectedSlot,
   setSelectedDate,
   useAppDispatch,
-} from "../store";
+} from "../../../_appointment/store";
 
-export default function Appointment({
+export default function DoctorAppointment({
   setShowSlots,
   username,
   navigateToBookAppointment,
@@ -23,7 +23,7 @@ export default function Appointment({
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const { currentDoctor, selectedWorkspace, selectedSlot } = useAppSelector(
-    (state) => state.AppointmentList.data
+    (state) => state?.AppointmentList?.data
   );
   const [workspaces, setWorkspaces] = useState<any[]>([]);
 
@@ -36,7 +36,7 @@ export default function Appointment({
   useEffect(() => {
     const fetchWorkspaces = async () => {
       try {
-        const response = await getWorkspaces(username);
+        const response = await getDoctorWorkspaces(username);
         if (response?.status) {
           setWorkspaces(response.data);
         } else {

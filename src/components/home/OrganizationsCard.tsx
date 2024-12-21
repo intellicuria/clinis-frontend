@@ -2,6 +2,7 @@
 
 import React, { FC, useState } from "react";
 import CategoryBadgeList from "@/ui/CategoryBadgeList/CategoryBadgeList";
+import Link from "next/link";
 
 export interface DoctorsCardProps {
   className?: string;
@@ -14,12 +15,23 @@ const OrganizationCard: FC<DoctorsCardProps> = ({
   org,
   ratio = "aspect-w-4 aspect-h-2",
 }) => {
-  const { name, logo, description, website, contact, email, members } = org;
+  console.log(org);
+  const {
+    name,
+    username,
+    logo,
+    description,
+    website,
+    contact,
+    email,
+    members,
+  } = org;
 
   const [isHover, setIsHover] = useState(false);
 
   return (
-    <div
+    <Link
+      href={`/org/${username}`}
       className={`nc-Card11 relative flex flex-col group rounded-3xl overflow-hidden bg-white dark:bg-neutral-900 ${className}`}
       onMouseEnter={() => setIsHover(true)}
       onMouseLeave={() => setIsHover(false)}
@@ -89,7 +101,7 @@ const OrganizationCard: FC<DoctorsCardProps> = ({
           </button>
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 
