@@ -4,6 +4,8 @@ import auth, { AuthState } from "./slices/auth";
 import base, { BaseState } from "./slices/base";
 import visit, { VisitState } from "./slices/visit";
 import locale, { LocaleState } from "./slices/locale/localeSlice";
+import medicalRecords from "./slices/medicalRecords/medicalRecordsSlice";
+import { MedicalRecordsState } from "./slices/medicalRecords/types";
 import RtkQueryService from "@/lib/actions/RtkQueryService";
 
 export type RootState = CombinedState<{
@@ -11,6 +13,7 @@ export type RootState = CombinedState<{
   base: CombinedState<BaseState>;
   locale: LocaleState;
   visit: CombinedState<VisitState>;
+  medicalRecords: MedicalRecordsState;
   /* eslint-disable @typescript-eslint/no-explicit-any */
   [RtkQueryService.reducerPath]: any;
 }>;
@@ -23,6 +26,7 @@ const staticReducers = {
   auth,
   base,
   locale,
+  medicalRecords,
   // visit,
   [RtkQueryService.reducerPath]: RtkQueryService.reducer,
 };

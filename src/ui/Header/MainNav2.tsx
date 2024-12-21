@@ -10,6 +10,8 @@ import NotifyDropdown from "./NotifyDropdown";
 import SwitchDarkMode from "../SwitchDarkMode/SwitchDarkMode";
 import Input from "../Input/Input";
 import SearchModal from "../../components/search/SearchModal";
+import { AccountActionDropdown } from "@/ui/AccountActionDropdown/AccountActionDropdown";
+import { useAppSelector } from "@/store";
 
 export interface MainNav2Props {
   className?: string;

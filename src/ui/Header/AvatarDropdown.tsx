@@ -19,13 +19,23 @@ export default function AvatarDropdown() {
     (state) => state.auth.user
   );
   const { token, signedIn } = useAppSelector((state) => state.auth.session);
+  const userData = useAppSelector((state) => state.auth.user); // Added to access user data directly
 
   const handleSignOut = () => {
     dispatch(signOutSuccess());
     dispatch(setUser({}));
   };
 
-  if (!signedIn) return null;
+  if (!signedIn) {
+    return (
+      <Link
+        href="/login"
+        className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100"
+      >
+        Login
+      </Link>
+    );
+  }
   return (
     <div className="AvatarDropdown ">
       <Popover className="relative">
@@ -36,7 +46,7 @@ export default function AvatarDropdown() {
             >
               <>
                 <h4 className="font-semibold whitespace-nowrap flex gap-2 mx-2">
-                  {fullname ? fullname : ""}
+                  {userData.fullname ? userData.fullname : ""}
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
@@ -71,9 +81,9 @@ export default function AvatarDropdown() {
 
                       <div className="flex-grow ms-3">
                         <h4 className="font-semibold">
-                          {fullname ? fullname : ""}
+                          {userData.fullname ? userData.fullname : ""}
                         </h4>
-                        <p className="text-xs mt-0.5">{phone_number}</p>
+                        <p className="text-xs mt-0.5">{userData.phone_number}</p>
                       </div>
                     </div>
 
@@ -81,7 +91,7 @@ export default function AvatarDropdown() {
 
                     {/* ------------------ 1 --------------------- */}
                     <Link
-                      href={"/author/demo-slug"}
+                      href="/profile"
                       className="flex items-center p-2 -m-3 transition duration-150 ease-in-out rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-700 focus:outline-none focus-visible:ring focus-visible:ring-orange-500 focus-visible:ring-opacity-50"
                       onClick={() => close()}
                     >
@@ -110,7 +120,7 @@ export default function AvatarDropdown() {
                         </svg>
                       </div>
                       <div className="ms-4">
-                        <p className="text-sm font-medium ">{"My Account"}</p>
+                        <p className="text-sm font-medium ">Profile</p>
                       </div>
                     </Link>
 

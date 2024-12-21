@@ -57,8 +57,8 @@ const DoctorProfile: React.FC<DoctorProfileProps> = ({ username }) => {
   return (
     <div className="flex flex-col gap-5 mb-10 scrollbar-hide">
       {/* Profile Info */}
-      <div className="flex items-center justify-between p-8">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col md:flex-row items-center justify-between p-4 md:p-8 gap-4">
+        <div className="flex flex-col md:flex-row items-center md:items-start gap-4 w-full md:w-auto">
           <img
             src={doctor.image || "https://via.placeholder.com/100"}
             alt={doctor.name || "Doctor"}
@@ -81,7 +81,7 @@ const DoctorProfile: React.FC<DoctorProfileProps> = ({ username }) => {
 
       {/* Experience & Languages */}
       <div className="p-4 rounded-lg bg-white shadow">
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-4">
           <span className="text-2xl">🎓</span>
           <div>
             <p className="font-semibold text-sm md:text-base">

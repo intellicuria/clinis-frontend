@@ -80,13 +80,10 @@ const BookAppointment = () => {
       try {
         const body = { mobile_number: mobileNumber };
         const response = await sendOTP(body);
-
         setIsOtpSent(true);
-        console.log(response);
-      } catch (error) {
-        console.error("Error fetching workspaces:", error);
-      } finally {
-        // Perform cleanup if needed
+      } catch (error: any) {
+        setIsOtpSent(false);
+        alert(error.message || "Failed to send OTP. Please try again.");
       }
       console.log("OTP sent to", mobileNumber); // Simulate OTP sending
     }
@@ -96,25 +93,32 @@ const BookAppointment = () => {
   const handleSubmitOtp = async () => {
     const enteredOtp = otp.join("");
     if (enteredOtp) {
-      const body = { mobile_number: mobileNumber, otp: enteredOtp };
-      const response: any = await verifyOTP(body);
-      if (response.status) {
-        dispatch(
-          setUser({
-            id: response.data.id,
-            phone_number: response.data.phone_number,
-            fullname: response.data.fullname,
-            status: response.data.status,
-          })
-        );
-        dispatch(signInSuccess(response.data.token));
-        dispatch(setToken(response.data.token));
+      try {
+        const body = { mobile_number: mobileNumber, otp: enteredOtp };
+        const response: any = await verifyOTP(body);
+        if (response.status) {
+          dispatch(
+            setUser({
+              id: response.data.id,
+              phone_number: response.data.phone_number,
+              fullname: response.data.fullname,
+              status: response.data.status,
+            })
+          );
+          dispatch(signInSuccess(response.data.token));
+          dispatch(setToken(response.data.token));
+          setIsOtpSent(true);
+          console.log(response);
+          setIsOtpVerified(true);
+        } else {
+          setIsOtpValid(false);
+        }
+      } catch (error: any) {
+        setIsOtpValid(false);
+        alert(error.message || "Failed to verify OTP. Please try again.");
       }
-      setIsOtpSent(true);
-      console.log(response);
-      setIsOtpVerified(true); // Change state to indicate OTP verification success
     } else {
-      setIsOtpValid(false); // Show error if OTP is incorrect
+      setIsOtpValid(false);
     }
   };
 
@@ -151,7 +155,7 @@ const BookAppointment = () => {
       </div>
 
       {/* Mobile Number / OTP Verification */}
-      <div>
+      <div className="flex flex-col space-y-4 max-w-full md:max-w-md mx-auto"> {/*This line is changed*/}
         <h2 className="text-lg font-semibold mb-2">Verify Your Number</h2>
         <label className="block text-sm text-gray-500 mb-1">
           {isOtpSent ? "Enter the OTP" : "Enter Your Mobile Number"}

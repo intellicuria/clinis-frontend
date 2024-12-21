@@ -15,7 +15,25 @@ import {
   PURGE,
   REGISTER,
 } from "redux-persist";
-import storage from "redux-persist/lib/storage";
+import createWebStorage from 'redux-persist/lib/storage/createWebStorage';
+
+const createNoopStorage = () => {
+  return {
+    getItem(_key: string) {
+      return Promise.resolve(null);
+    },
+    setItem(_key: string, value: any) {
+      return Promise.resolve(value);
+    },
+    removeItem(_key: string) {
+      return Promise.resolve();
+    },
+  };
+};
+
+const storage = typeof window !== 'undefined' 
+  ? createWebStorage('local')
+  : createNoopStorage();
 import { PERSIST_STORE_NAME } from "@/constants/app.constant";
 import rootReducer, { RootState, AsyncReducers } from "./rootReducer";
 import RtkQueryService from "@/lib/actions/RtkQueryService";

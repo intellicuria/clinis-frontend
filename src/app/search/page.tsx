@@ -43,6 +43,7 @@ interface DoctorData {
 const PageSearch = () => {
   const [doctorData, setDoctorData] = useState<DoctorData[]>([]);
   const [orgData, setOrgData] = useState<DoctorData[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
 
   const [doctorsPage, setDoctorsPage] = useState(1);
   const [doctorsTotalPages, setDoctorsTotalPages] = useState(1);
@@ -64,15 +65,14 @@ const PageSearch = () => {
 
   useEffect(() => {
     const fetchDoctorDetails = async (page: number) => {
+      if (!searchText?.trim()) return;
+      
       setLoadingDoctors(true);
       setErrorDoctors(false);
       try {
-        const doctorResponse = await searchDoctors<{
-          status: boolean;
-          data: { result: DoctorData[]; pagination: { totalPages: number } };
-        }>(searchText, location, page);
+        const doctorResponse = await searchDoctors<SearchResponse>(searchText, location, page, 10);
 
-        if (doctorResponse.data) {
+        if (doctorResponse.status && doctorResponse.data) {
           setDoctorData(doctorResponse.data.result);
           setDoctorsTotalPages(doctorResponse.data.pagination.totalPages);
         }
@@ -81,23 +81,23 @@ const PageSearch = () => {
         setErrorDoctors(true);
       } finally {
         setLoadingDoctors(false);
+        setIsSearching(false);
       }
     };
 
     fetchDoctorDetails(doctorsPage);
-  }, [doctorsPage, searchText]);
+  }, [doctorsPage, searchText, location]);
 
   useEffect(() => {
     const fetchOrgDetails = async (page: number) => {
+      if (!searchText?.trim()) return;
+
       setLoadingOrganizations(true);
       setErrorOrganizations(false);
       try {
-        const orgResponse = await searchOrganization<{
-          status: boolean;
-          data: { result: DoctorData[]; pagination: { totalPages: number } };
-        }>(searchText, location, page);
+        const orgResponse = await searchOrganization<SearchResponse>(searchText, location, page, 10);
 
-        if (orgResponse.data) {
+        if (orgResponse.status && orgResponse.data) {
           setOrgData(orgResponse.data.result);
           setOrgTotalPages(orgResponse.data.pagination.totalPages);
         }
@@ -106,11 +106,12 @@ const PageSearch = () => {
         setErrorOrganizations(true);
       } finally {
         setLoadingOrganizations(false);
+        setIsSearching(false);
       }
     };
 
     fetchOrgDetails(orgPage);
-  }, [orgPage, searchText]);
+  }, [orgPage, searchText, location]);
 
   const handleDoctorsPageChange = (page: number) => {
     setDoctorsPage(page);
@@ -122,9 +123,24 @@ const PageSearch = () => {
 
   const router = useRouter();
 
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      if (searchTextValue.trim().length >= 3) {
+        setIsSearching(true);
+        router.push(
+          `/search?text=${encodeURIComponent(
+            searchTextValue.trim()
+          )}&location=${location}`,
+          { scroll: false }
+        );
+      }
+    }, 300);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchTextValue]);
+
   const handleFormSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    console.log("Form submitted");
     if (searchTextValue.trim()) {
       router.push(
         `/search?text=${encodeURIComponent(
@@ -134,9 +150,9 @@ const PageSearch = () => {
     }
   };
   return (
-    <div className="nc-PageSearch">
+    <div className="nc-PageSearch bg-white dark:bg-neutral-900">
       {/* HEADER */}
-      <div className="container py-10 lg:pb-28 space-y-16 lg:space-y-16">
+      <div className="container py-10 lg:pb-28 space-y-16 lg:space-y-16 relative">
         <header className="w-full max-w-3xl mx-auto text-center flex flex-col items-center">
           <h2 className="text-2xl sm:text-4xl font-semibold">{searchText}</h2>
           <span className="block text-xs sm:text-sm mt-4 text-neutral-500 dark:text-neutral-300">
@@ -189,8 +205,10 @@ const PageSearch = () => {
           </form>
         </header>
         <main className="space-y-16">
-          {loadingDoctors || loadingOrganizations ? (
-            <div className="text-center py-10">Loading...</div>
+          {(loadingDoctors || loadingOrganizations || isSearching) ? (
+            <div className="text-center py-10">
+              <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-white"></div>
+            </div>
           ) : errorDoctors || errorOrganizations ? (
             <div className="text-center py-10 text-red-500">
               Something went wrong. Please try again later.
