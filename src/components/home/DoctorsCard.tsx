@@ -33,7 +33,7 @@ const OrganizationsCard: FC<CardAuthorBox2Props> = ({
           <NcImage
             alt="author"
             containerClassName="flex aspect-w-7 aspect-h-5 w-full h-0"
-            src="https://images.pexels.com/photos/4064835/pexels-photo-4064835.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"
+            src="https://images.pexels.com/photos/1103970/pexels-photo-1103970.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"
             fill
             sizes="(max-width: 600px) 480px, 33vw"
           />

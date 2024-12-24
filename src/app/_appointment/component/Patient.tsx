@@ -37,18 +37,16 @@ const Patient = () => {
   const { selectedSlot, selectedDoctor, selectedDate, selectedWorkspace } =
     AppSelector((state) => state.AppointmentList.data);
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
   const bookAppoint = async () => {
-    console.log("Book Appointment");
-
+    setLoading(true); // Set loading to true when the process starts
     try {
-      // Helper function to format time
       const formatTime = (dateString: string, time: string): string => {
         if (!time || typeof time !== "string") {
           throw new Error(`Invalid time value: ${time}`);
         }
 
-        // Handle AM/PM format
         const amPmMatch = time.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
         if (!amPmMatch) {
           throw new Error(`Invalid time format: ${time}`);
@@ -57,26 +55,21 @@ const Patient = () => {
         const [_, hours, minutes, period] = amPmMatch;
         let hour = parseInt(hours, 10);
 
-        // Convert to 24-hour format
         if (period.toUpperCase() === "PM" && hour !== 12) {
           hour += 12;
         } else if (period.toUpperCase() === "AM" && hour === 12) {
           hour = 0;
         }
 
-        // Parse the date string to extract year, month, and day
         const [year, month, day] = dateString.split("T")[0].split("-");
-
-        // Manually construct ISO string without timezone offset
         return `${year}-${month}-${day}T${String(hour).padStart(
           2,
           "0"
         )}:${minutes}:00.000Z`;
       };
 
-      // Validate and format start_time and end_time
-      const startTime = formatTime(selectedDate, selectedSlot.from); // e.g., "2024-12-09T08:00:00.000Z"
-      const endTime = formatTime(selectedDate, selectedSlot.to); // e.g., "2024-12-09T08:15:00.000Z"
+      const startTime = formatTime(selectedDate, selectedSlot.from);
+      const endTime = formatTime(selectedDate, selectedSlot.to);
 
       const body = {
         patient_id: id,
@@ -88,21 +81,22 @@ const Patient = () => {
         appointment_date: selectedDate,
         reason: "",
       };
+
       console.log(body);
       const response = await bookAppointment(body);
-      //navigate to /appointment/:appointmendId
-      router.push(`/appointment/${response.data.id}`);
 
+      router.push(`/appointment/${response.data.id}`);
       console.log(response);
     } catch (error) {
       console.error("Error in booking appointment:", error.message);
+    } finally {
+      setLoading(false); // Set loading to false once the process completes
     }
   };
 
   return (
     <div className="p-5 font-sans">
       <h1 className="text-2xl font-bold mb-5">Appointment Details</h1>
-      {/* Appointment Details */}
       <div className="bg-white shadow p-4 rounded-lg mb-6">
         <p className="text-sm font-medium">
           <span className="block text-gray-500">DATE & TIME</span>
@@ -127,8 +121,19 @@ const Patient = () => {
           <b>{phone_number}</b>
         </p>
       </div>
-      <Button pattern="primary" className="w-full" onClick={bookAppoint}>
-        Confirm Appointment
+      <Button
+        pattern="primary"
+        className="w-full flex justify-center items-center"
+        onClick={bookAppoint}
+        disabled={loading} // Disable button when loading
+      >
+        {loading ? (
+          <span className="flex items-center gap-2">
+            <span className="loader" /> Booking...
+          </span>
+        ) : (
+          "Confirm Appointment"
+        )}
       </Button>
     </div>
   );

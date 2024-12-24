@@ -3,7 +3,7 @@
 import React, { FC, useState } from "react";
 import CategoryBadgeList from "@/ui/CategoryBadgeList/CategoryBadgeList";
 import Link from "next/link";
-
+import bg from "../../images/Orgbg.jpeg"
 export interface DoctorsCardProps {
   className?: string;
   org: any;
@@ -32,30 +32,35 @@ const OrganizationCard: FC<DoctorsCardProps> = ({
   return (
     <Link
       href={`/org/${username}`}
-      className={`nc-Card11 relative flex flex-col group rounded-3xl overflow-hidden bg-white dark:bg-neutral-900 ${className}`}
+      className={`nc-Card11 relative flex flex-col group rounded-lg overflow-hidden shadow-md transition-transform transform hover:scale-105 bg-white dark:bg-neutral-800 ${className}`}
       onMouseEnter={() => setIsHover(true)}
       onMouseLeave={() => setIsHover(false)}
     >
       {/* Image Section */}
       <div
-        className={`block flex-shrink-0 relative w-full rounded-t-3xl overflow-hidden z-10 ${ratio}`}
+        className={`block flex-shrink-0 relative w-full rounded-t-lg overflow-hidden z-10 ${ratio}`}
       >
         <img
           src={
             logo !== ""
               ? logo
-              : "https://images.pexels.com/photos/4064835/pexels-photo-4064835.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"
+              : "https://images.pexels.com/photos/1103970/pexels-photo-1103970.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"
           }
           alt={name}
           className="absolute inset-0 object-cover w-full h-full"
         />
+        {isHover && (
+          <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center text-white text-lg font-semibold">
+            {name}
+          </div>
+        )}
       </div>
 
       {/* Card Content */}
-      <div className="p-4 flex flex-col space-y-3">
+      <div className="p-6 flex flex-col space-y-4">
         {/* Organization Name */}
         <div className="flex justify-between items-center">
-          <h1 className="font-semibold line-clamp-2" title={name}>
+          <h1 className="text-lg font-bold text-neutral-900 dark:text-white truncate">
             {name}
           </h1>
           <CategoryBadgeList
@@ -72,7 +77,7 @@ const OrganizationCard: FC<DoctorsCardProps> = ({
         </div>
 
         {/* Description */}
-        <p className="text-sm text-neutral-700 dark:text-neutral-300 line-clamp-3">
+        <p className="text-sm text-neutral-600 dark:text-neutral-400 line-clamp-3">
           {description}
         </p>
 
@@ -89,14 +94,20 @@ const OrganizationCard: FC<DoctorsCardProps> = ({
         )}
 
         {/* Contact */}
-        <div className="text-sm text-neutral-500">
-          <p>Contact: {contact}</p>
-          {email && <p>Email: {email.join(", ")}</p>}
+        <div className="text-sm text-neutral-500 space-y-1">
+          <p>
+            <span className="font-medium">Contact:</span> {contact}
+          </p>
+          {email && (
+            <p>
+              <span className="font-medium">Email:</span> {email.join(", ")}
+            </p>
+          )}
         </div>
 
-        <div className="flex justify-between items-center mt-auto">
+        <div className="flex justify-end mt-auto">
           {/* Actions */}
-          <button className="px-4 py-2 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-700">
+          <button className="px-5 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg shadow-md hover:bg-blue-700">
             View Details
           </button>
         </div>
