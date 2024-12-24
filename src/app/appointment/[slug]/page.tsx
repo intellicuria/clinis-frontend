@@ -71,7 +71,11 @@ const AppointmentConfirmation = () => {
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
   }
   return (
     <div className="bg-gray-50 font-sans min-h-screen flex flex-col space-y-20">
