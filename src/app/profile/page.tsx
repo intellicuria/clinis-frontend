@@ -69,34 +69,34 @@ export default function ProfilePage() {
 
   const renderOverview = () => (
     <div className="space-y-6">
-      <div className="bg-white p-6 rounded-lg shadow">
-        <h3 className="text-lg font-semibold mb-4">Basic Information</h3>
-        <div className="grid grid-cols-2 gap-4">
+      <section className="bg-white p-6 rounded-xl shadow-md">
+        <h3 className="text-xl font-semibold mb-4">Basic Information</h3>
+        <div className="grid grid-cols-2 gap-6">
           <div>
-            <p className="text-sm text-gray-600">Age</p>
-            <p className="font-medium">{profile?.age} years</p>
+            <p className="text-sm text-gray-500">Age</p>
+            <p className="text-lg font-medium">{profile?.age} years</p>
           </div>
           <div>
-            <p className="text-sm text-gray-600">Gender</p>
-            <p className="font-medium">{profile?.gender}</p>
+            <p className="text-sm text-gray-500">Gender</p>
+            <p className="text-lg font-medium">{profile?.gender}</p>
           </div>
           <div>
-            <p className="text-sm text-gray-600">Blood Group</p>
-            <p className="font-medium">{profile?.blood_group}</p>
+            <p className="text-sm text-gray-500">Blood Group</p>
+            <p className="text-lg font-medium">{profile?.blood_group}</p>
           </div>
           <div>
-            <p className="text-sm text-gray-600">Height/Weight</p>
-            <p className="font-medium">
-              {profile?.height}cm / {profile?.weight}kg
+            <p className="text-sm text-gray-500">Height/Weight</p>
+            <p className="text-lg font-medium">
+              {profile?.height} cm / {profile?.weight} kg
             </p>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div className="bg-white p-6 rounded-lg shadow">
-        <h3 className="text-lg font-semibold mb-4">Medical History</h3>
+      <section className="bg-white p-6 rounded-xl shadow-md">
+        <h3 className="text-xl font-semibold mb-4">Medical History</h3>
         {profile?.medical_history && profile.medical_history.length > 0 ? (
-          <ul className="list-disc pl-5">
+          <ul className="list-disc pl-5 space-y-2">
             {profile.medical_history.map((item, index) => (
               <li key={index} className="text-gray-700">
                 {item}
@@ -106,34 +106,34 @@ export default function ProfilePage() {
         ) : (
           <p className="text-gray-500 italic">No medical history available</p>
         )}
-      </div>
+      </section>
 
-      <div className="bg-white p-6 rounded-lg shadow">
-        <h3 className="text-lg font-semibold mb-4">Allergies</h3>
-        <div className="flex flex-wrap gap-2">
-          {profile?.allergies && profile.allergies.length > 0 ? (
-            profile.allergies.map((allergy, index) => (
+      <section className="bg-white p-6 rounded-xl shadow-md">
+        <h3 className="text-xl font-semibold mb-4">Allergies</h3>
+        {profile?.allergies && profile.allergies.length > 0 ? (
+          <div className="flex flex-wrap gap-2">
+            {profile.allergies.map((allergy, index) => (
               <span
                 key={index}
                 className="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm"
               >
                 {allergy}
               </span>
-            ))
-          ) : (
-            <p className="text-gray-500 italic">No allergies recorded</p>
-          )}
-        </div>
-      </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-gray-500 italic">No allergies recorded</p>
+        )}
+      </section>
     </div>
   );
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
+    <div className="max-w-5xl mx-auto p-8">
       {/* Profile Header */}
-      <div className="bg-white rounded-lg p-6 shadow-sm mb-6">
-        <div className="flex items-start gap-6">
-          <div className="relative w-24 h-24">
+      <header className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-8 rounded-xl shadow-lg mb-8">
+        <div className="flex items-center gap-8">
+          <div className="relative w-28 h-28">
             <Image
               src={profile?.profile_image || "/images/avatar.svg"}
               alt="Profile"
@@ -143,23 +143,17 @@ export default function ProfilePage() {
             />
           </div>
           <div className="flex-1">
-            <div className="flex items-center gap-3 mb-4">
-              <h1 className="text-2xl font-semibold">{profile?.fullname}</h1>
-              <span className="text-sm bg-gray-100 px-2 py-1 rounded">
-                ID: {profile?.id}
-              </span>
-            </div>
-            <div className="space-y-3">
-              <Link href="/profile/edit">
-                <ButtonPrimary className="w-full">Edit Profile</ButtonPrimary>
-              </Link>
-            </div>
+            <h1 className="text-3xl font-bold">{profile?.fullname}</h1>
+            <p className="text-sm opacity-80">ID: {profile?.id}</p>
           </div>
+          <Link href="/profile/edit">
+            <ButtonPrimary>Edit Profile</ButtonPrimary>
+          </Link>
         </div>
-      </div>
+      </header>
 
       {/* Navigation Tabs */}
-      <div className="flex flex-wrap gap-2 mb-6">
+      <nav className="flex gap-4 mb-8">
         {[
           { id: "overview", label: "Overview" },
           { id: "records", label: "Medical Records" },
@@ -168,27 +162,27 @@ export default function ProfilePage() {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`px-4 py-2 rounded-md transition-colors ${
+            className={`px-6 py-2 rounded-lg font-medium transition ${
               activeTab === tab.id
-                ? "bg-primary-600 text-white"
+                ? "bg-indigo-600 text-white shadow"
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
             }`}
           >
             {tab.label}
           </button>
         ))}
-      </div>
+      </nav>
 
       {/* Content Section */}
-      <div className="bg-gray-50 rounded-lg p-6">
+      <section className="bg-gray-50 p-6 rounded-xl shadow-md">
         {loading ? (
-          <div className="space-y-4">
+          <div className="space-y-6">
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="bg-white p-4 rounded-lg shadow animate-pulse"
+                className="bg-white p-4 rounded-xl shadow animate-pulse"
               >
-                <div className="flex items-center space-x-4">
+                <div className="flex items-center gap-4">
                   <Skeleton className="w-12 h-12 rounded-full" />
                   <div className="flex-1 space-y-2">
                     <Skeleton className="h-4 w-3/4" />
@@ -205,7 +199,7 @@ export default function ProfilePage() {
         ) : (
           <AppointmentsTab />
         )}
-      </div>
+      </section>
     </div>
   );
 }

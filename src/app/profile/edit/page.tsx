@@ -30,17 +30,16 @@ export default function EditProfilePage() {
     allergies: [] as string[],
   });
 
-  const userId = useAppSelector((state) => state.auth.user.id);
+  const userId = useAppSelector((state) => state.auth.user?.id);
 
   useEffect(() => {
     if (!userId) return;
     fetchProfileData(userId);
   }, [userId]);
 
-  const fetchProfileData = async (userId: any) => {
+  const fetchProfileData = async (userId: string) => {
     try {
       setLoading(true);
-
       const response = await getPatientProfile(userId);
       if (response?.data?.status) {
         const data = response.data;
@@ -48,7 +47,7 @@ export default function EditProfilePage() {
           fullname: data.fullname || "",
           email: data.email || "",
           phone_number: data.phone_number || "",
-          address: "",
+          address: data.address || "",
           dob: data.dob || "",
           gender: data.gender || "",
           blood_group: data.blood_group || "",
@@ -57,9 +56,8 @@ export default function EditProfilePage() {
           medical_history: data.medical_history || [],
           allergies: data.allergies || [],
         });
-      } else {
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error fetching profile:", error);
     } finally {
       setLoading(false);
@@ -70,33 +68,25 @@ export default function EditProfilePage() {
     e.preventDefault();
     setLoading(true);
     try {
-      // Update profile data
       const response = await updatePatientProfile({
         ...formData,
         height: Number(formData.height),
         weight: Number(formData.weight),
       });
 
-      if (response.status) {
-        // Upload image if selected
+      if (response?.status) {
         if (imageFile) {
-          try {
-            const formDataImg = new FormData();
-            formDataImg.append("profile_image", imageFile);
-            const imageResponse = await updateProfileImage(formDataImg);
-            if (!imageResponse.status) {
-              return;
-            }
-          } catch (error) {
-            console.error("Image upload error:", error);
-            return;
+          const formDataImg = new FormData();
+          formDataImg.append("profile_image", imageFile);
+          const imageResponse = await updateProfileImage(formDataImg);
+          if (!imageResponse?.status) {
+            console.error("Image upload failed");
           }
         }
-
         router.push("/profile");
-      } else {
       }
     } catch (error) {
+      console.error("Error updating profile:", error);
     } finally {
       setLoading(false);
     }
@@ -118,12 +108,12 @@ export default function EditProfilePage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <div className="bg-white rounded-lg p-6 shadow-sm mb-6">
-        <h1 className="text-2xl font-semibold mb-6">Edit Profile</h1>
+    <div className="max-w-6xl mx-auto p-6 lg:p-12">
+      <div className="bg-white rounded-lg p-8 shadow-lg">
+        <h1 className="text-3xl font-bold text-gray-800 mb-8">Edit Profile</h1>
 
-        <div className="flex items-center gap-4 mb-8">
-          <div className="relative w-24 h-24">
+        <div className="flex items-center gap-6 mb-10">
+          <div className="relative w-28 h-28 rounded-full overflow-hidden">
             <Image
               src={
                 imageFile
@@ -131,9 +121,8 @@ export default function EditProfilePage() {
                   : "/images/avatar.svg"
               }
               alt="Profile"
-              className="rounded-full"
+              className="object-cover w-full h-full"
               fill
-              style={{ objectFit: "cover" }}
             />
           </div>
           <input
@@ -148,10 +137,10 @@ export default function EditProfilePage() {
           </label>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <form onSubmit={handleSubmit} className="space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-600 mb-2">
                 Full Name
               </label>
               <Input
@@ -164,7 +153,7 @@ export default function EditProfilePage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-600 mb-2">
                 Email
               </label>
               <Input
@@ -177,7 +166,7 @@ export default function EditProfilePage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-600 mb-2">
                 Phone Number
               </label>
               <Input
@@ -190,7 +179,7 @@ export default function EditProfilePage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-600 mb-2">
                 Date of Birth
               </label>
               <Input
@@ -202,7 +191,7 @@ export default function EditProfilePage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-600 mb-2">
                 Gender
               </label>
               <select
@@ -219,7 +208,7 @@ export default function EditProfilePage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-600 mb-2">
                 Blood Group
               </label>
               <select
@@ -241,7 +230,7 @@ export default function EditProfilePage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-600 mb-2">
                 Height (cm)
               </label>
               <Input
@@ -254,7 +243,7 @@ export default function EditProfilePage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-600 mb-2">
                 Weight (kg)
               </label>
               <Input
@@ -266,19 +255,9 @@ export default function EditProfilePage() {
               />
             </div>
           </div>
-
-          <div className="flex gap-4">
-            <ButtonPrimary type="submit" disabled={loading}>
-              {loading ? "Saving..." : "Save Changes"}
-            </ButtonPrimary>
-            <button
-              type="button"
-              onClick={() => router.back()}
-              className="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
-            >
-              Cancel
-            </button>
-          </div>
+          <ButtonPrimary type="submit" disabled={loading}>
+            {loading ? "Saving..." : "Save Changes"}
+          </ButtonPrimary>
         </form>
       </div>
     </div>
