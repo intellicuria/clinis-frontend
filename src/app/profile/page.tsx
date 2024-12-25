@@ -5,9 +5,10 @@ import Image from "next/image";
 import ButtonPrimary from "@/ui/Button/ButtonPrimary";
 import Link from "next/link";
 import Calendar from "@/ui/Calendar/Calendar";
-import { useAppSelector } from "@/store";
+import { useAppDispatch, useAppSelector, setUser } from "@/store";
 import Skeleton from "@/ui/Skeleton/Skeleton";
 import { getPatientProfile } from "@/lib/actions/PatientService";
+import { getAppointments } from "@/lib/actions/AppointmentService";
 import MedicalRecordsTab from "./components/MedicalRecordsTab";
 import AppointmentsTab from "./components/AppointmentsTab";
 
@@ -31,6 +32,7 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("overview");
   const userId = useAppSelector((state) => state.auth.user.id);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     if (!userId) return;
@@ -41,8 +43,18 @@ export default function ProfilePage() {
     try {
       setLoading(true);
       const response = await getPatientProfile(userId);
+      const response1 = await getAppointments();
+      console.log(response1);
       if (response?.status) {
         const profileData = response.data;
+        dispatch(
+          setUser({
+            id: profileData.id,
+            phone_number: profileData.phone_number,
+            fullname: profileData.fullname,
+            status: profileData.status,
+          })
+        );
         setProfile({
           id: profileData.id,
           fullname: profileData.fullname || "",
