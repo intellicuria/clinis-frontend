@@ -11,7 +11,6 @@ import {
   updatePatientProfile,
   updateProfileImage,
 } from "@/lib/actions/PatientService";
-import toast from "react-hot-toast";
 
 export default function EditProfilePage() {
   const router = useRouter();
@@ -31,15 +30,18 @@ export default function EditProfilePage() {
     allergies: [] as string[],
   });
 
-  useEffect(() => {
-    fetchProfileData();
-  }, []);
+  const userId = useAppSelector((state) => state.auth.user.id);
 
-  const fetchProfileData = async () => {
+  useEffect(() => {
+    if (!userId) return;
+    fetchProfileData(userId);
+  }, [userId]);
+
+  const fetchProfileData = async (userId: any) => {
     try {
       setLoading(true);
 
-      const response = await getPatientProfile();
+      const response = await getPatientProfile(userId);
       if (response?.data?.status) {
         const data = response.data;
         setFormData({
@@ -56,13 +58,9 @@ export default function EditProfilePage() {
           allergies: data.allergies || [],
         });
       } else {
-        toast.error(response?.data?.message || "Failed to fetch profile data");
       }
     } catch (error: any) {
       console.error("Error fetching profile:", error);
-      toast.error(
-        error?.response?.data?.message || "Failed to fetch profile data",
-      );
     } finally {
       setLoading(false);
     }
@@ -82,35 +80,30 @@ export default function EditProfilePage() {
       if (response.status) {
         // Upload image if selected
         if (imageFile) {
-        try {
-          const formDataImg = new FormData();
-          formDataImg.append("profile_image", imageFile);
-          const imageResponse = await updateProfileImage(formDataImg);
-          if (!imageResponse.status) {
-            toast.error("Failed to upload image");
+          try {
+            const formDataImg = new FormData();
+            formDataImg.append("profile_image", imageFile);
+            const imageResponse = await updateProfileImage(formDataImg);
+            if (!imageResponse.status) {
+              return;
+            }
+          } catch (error) {
+            console.error("Image upload error:", error);
             return;
           }
-        } catch (error) {
-          console.error("Image upload error:", error);
-          toast.error("Error uploading image");
-          return;
         }
-      }
 
-        toast.success("Profile updated successfully");
         router.push("/profile");
       } else {
-        toast.error("Failed to update profile");
       }
     } catch (error) {
-      toast.error("Error updating profile");
     } finally {
       setLoading(false);
     }
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     setFormData({
       ...formData,

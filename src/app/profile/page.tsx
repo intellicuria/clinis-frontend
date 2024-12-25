@@ -7,7 +7,6 @@ import Link from "next/link";
 import Calendar from "@/ui/Calendar/Calendar";
 import { useAppSelector } from "@/store";
 import Skeleton from "@/ui/Skeleton/Skeleton";
-import toast from "react-hot-toast";
 import { getPatientProfile } from "@/lib/actions/PatientService";
 import MedicalRecordsTab from "./components/MedicalRecordsTab";
 import AppointmentsTab from "./components/AppointmentsTab";
@@ -31,15 +30,17 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState<PatientProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("overview");
+  const userId = useAppSelector((state) => state.auth.user.id);
 
   useEffect(() => {
-    fetchProfileData();
-  }, []);
+    if (!userId) return;
+    fetchProfileData(userId);
+  }, [userId]);
 
-  const fetchProfileData = async () => {
+  const fetchProfileData = async (userId: any) => {
     try {
       setLoading(true);
-      const response = await getPatientProfile();
+      const response = await getPatientProfile(userId);
       if (response?.status) {
         const profileData = response.data;
         setProfile({
@@ -57,13 +58,10 @@ export default function ProfilePage() {
           blood_group: profileData.blood_group || "",
         });
       } else {
-        toast.error(response?.message || "Failed to fetch profile data");
+        console.error("Error fetching profile");
       }
     } catch (error: any) {
       console.error("Error fetching profile:", error);
-      toast.error(
-        error?.response?.data?.message || "Error loading profile data",
-      );
     } finally {
       setLoading(false);
     }

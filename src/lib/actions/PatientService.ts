@@ -4,11 +4,11 @@ import { Response } from "@/types/module.types";
 import ClinisioApiService from "./ClinisioApiService";
 const API_KEY = "123";
 
-export async function getPatientProfile() {
+export async function getPatientProfile(userId: any) {
   const headers = {
     apikey: API_KEY,
   };
-  const url = "/patient/me";
+  const url = `/patient/me/${userId}`;
   const axiosConfig: AxiosRequestConfig = {
     url,
     method: "GET",
@@ -33,7 +33,7 @@ export async function updatePatientProfile(data: any) {
 }
 
 export async function updateProfileImage(formData: FormData) {
-  const headers = { apikey: API_KEY, 'Content-Type': 'multipart/form-data' };
+  const headers = { apikey: API_KEY, "Content-Type": "multipart/form-data" };
   const url = "/patient/update-image";
   try {
     const response = await ClinisioApiService.fetchData({
