@@ -48,3 +48,24 @@ export async function getAppointments() {
     throw error;
   }
 }
+export async function cancelAppointment(id: any) {
+  const headers = {
+    apikey: API_KEY,
+  };
+  const url = `/appointment/decline/${id}`;
+  const axiosConfig: AxiosRequestConfig = {
+    url,
+    method: "PUT",
+    headers: headers,
+    maxRedirects: 5,
+  };
+
+  try {
+    const response = await ClinisioApiService.fetchData<T>(axiosConfig);
+    // console.log(response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching modules:", error);
+    throw error;
+  }
+}
