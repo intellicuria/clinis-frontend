@@ -10,6 +10,7 @@ const nextConfig = {
       "images.pexels.com",
       "images.unsplash.com",
       "secure.gravatar.com",
+      "cdn-icons-png.flaticon.com",
       "amazonaws.com",
       "clinisio-backend.s3.ap-south-1.amazonaws.com",
     ],

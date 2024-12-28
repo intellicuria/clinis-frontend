@@ -1,4 +1,3 @@
-
 "use client";
 import { useState, useRef } from "react";
 import { useAppDispatch } from "@/store";
@@ -20,14 +19,17 @@ const Login = () => {
   const otpRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   const handleMobileNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/\D/g, '').slice(0, 10);
+    const value = e.target.value.replace(/\D/g, "").slice(0, 10);
     setMobileNumber(value);
     setIsMobileValid(/^\d{10}$/.test(value));
   };
 
-  const handleOtpChange = (event: React.ChangeEvent<HTMLInputElement>, index: number) => {
-    const value = event.target.value.replace(/\D/g, '').slice(0, 1);
-    if (value || value === '') {
+  const handleOtpChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
+    const value = event.target.value.replace(/\D/g, "").slice(0, 1);
+    if (value || value === "") {
       const newOtp = [...otp];
       newOtp[index] = value;
       setOtp(newOtp);
@@ -37,15 +39,18 @@ const Login = () => {
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
-    if (e.key === 'Backspace' && !otp[index] && index > 0) {
+  const handleKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    index: number
+  ) => {
+    if (e.key === "Backspace" && !otp[index] && index > 0) {
       otpRefs.current[index - 1]?.focus();
     }
   };
 
   const handleSendOtp = async () => {
     if (!isMobileValid || mobileNumber.length !== 10) return;
-    
+
     setLoading(true);
     try {
       const response = await sendOTP({ mobile_number: mobileNumber });
@@ -68,22 +73,25 @@ const Login = () => {
 
     setLoading(true);
     try {
-      const response = await verifyOTP({ 
-        mobile_number: mobileNumber, 
-        otp: enteredOtp 
+      const response = await verifyOTP({
+        mobile_number: mobileNumber,
+        otp: enteredOtp,
       });
 
       if (response.status) {
         const userData = response.data;
-        dispatch(setUser({
-          id: userData.id,
-          phone_number: userData.phone_number,
-          fullname: userData.fullname,
-          status: userData.status,
-        }));
+        dispatch(
+          setUser({
+            id: userData.id,
+            phone_number: userData.phone_number,
+            fullname: userData.fullname,
+            status: userData.status,
+            profile_image: userData.profile_image,
+          })
+        );
         dispatch(signInSuccess(userData.token));
         dispatch(setToken(userData.token));
-        router.push('/');
+        router.push("/");
       } else {
         setIsOtpValid(false);
       }
@@ -124,7 +132,9 @@ const Login = () => {
               )}
               <Button
                 onClick={handleSendOtp}
-                disabled={!isMobileValid || mobileNumber.length !== 10 || loading}
+                disabled={
+                  !isMobileValid || mobileNumber.length !== 10 || loading
+                }
                 className="w-full mt-4"
                 pattern="primary"
               >

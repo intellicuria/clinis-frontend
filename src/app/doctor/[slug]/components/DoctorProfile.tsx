@@ -60,7 +60,10 @@ const DoctorProfile: React.FC<DoctorProfileProps> = ({ username }) => {
       <div className="flex flex-col md:flex-row items-center justify-between p-4 md:p-8 gap-4">
         <div className="flex flex-col md:flex-row items-center md:items-start gap-4 w-full md:w-auto">
           <img
-            src={doctor.image || "https://via.placeholder.com/100"}
+            src={
+              doctor.image ||
+              "https://cdn-icons-png.flaticon.com/512/10337/10337609.png"
+            }
             alt={doctor.name || "Doctor"}
             className="w-24 h-24 rounded-full"
           />
