@@ -65,7 +65,7 @@ export default function OrganizationsPage() {
           <p>Loading...</p>
         </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 md:gap-8">
+        <div className="grid grid-cols-4 gap-5 md:gap-8">
           {filteredOrganizations.length > 0 ? (
             filteredOrganizations.map((organization) => (
               <OrganizationsCard key={organization.id} org={organization} />
