@@ -5,6 +5,7 @@ export type UserState = {
   id?: number | null;
   phone_number?: string;
   fullname?: string;
+  profile_image?: string;
   status?: boolean;
   location?: string;
 };
@@ -13,6 +14,7 @@ export const initialState: UserState = {
   id: null,
   phone_number: "",
   fullname: "",
+  profile_image: "",
   status: false,
   location: "",
 };
@@ -26,6 +28,7 @@ const userSlice = createSlice({
       state.phone_number = action.payload.phone_number ?? "";
       state.fullname = action.payload.fullname ?? "";
       state.status = action.payload.status ?? false;
+      state.profile_image = action.payload.profile_image ?? "";
     },
     setLocation(state, action: PayloadAction<string>) {
       state.location = action.payload;

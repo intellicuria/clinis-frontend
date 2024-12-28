@@ -51,7 +51,7 @@ const OrganizationsCard: FC<CardAuthorBox2Props> = ({
           containerClassName="ring-2 ring-white"
           sizeClass="w-16 h-16 text-2xl"
           radius="rounded-full"
-          imgUrl={image}
+          imgUrl="https://cdn-icons-png.flaticon.com/512/10337/10337609.png"
           userName={name}
         />
         <div className="mt-3">
