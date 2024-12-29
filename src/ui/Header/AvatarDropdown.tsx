@@ -77,7 +77,13 @@ export default function AvatarDropdown() {
                 <div className="overflow-hidden rounded-3xl shadow-lg ring-1 ring-black ring-opacity-5">
                   <div className="relative grid grid-cols-1 gap-6 bg-white dark:bg-neutral-800 py-7 px-6">
                     <div className="flex items-center">
-                      <Avatar imgUrl={avatarImgs[7]} sizeClass="w-12 h-12" />
+                      <Avatar
+                        imgUrl={
+                          userData.profile_image ||
+                          "https://cdn-icons-png.flaticon.com/512/10337/10337609.png"
+                        }
+                        sizeClass="w-12 h-12"
+                      />
 
                       <div className="flex-grow ms-3">
                         <h4 className="font-semibold">

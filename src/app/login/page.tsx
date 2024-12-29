@@ -24,7 +24,10 @@ const Login = () => {
     setIsMobileValid(/^\d{10}$/.test(value));
   };
 
-  const handleOtpChange = (event: React.ChangeEvent<HTMLInputElement>, index: number) => {
+  const handleOtpChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
     const value = event.target.value.replace(/\D/g, "").slice(0, 1);
     if (value || value === "") {
       const newOtp = [...otp];
@@ -36,7 +39,10 @@ const Login = () => {
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
+  const handleKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    index: number
+  ) => {
     if (e.key === "Backspace" && !otp[index] && index > 0) {
       otpRefs.current[index - 1]?.focus();
     }
@@ -80,6 +86,7 @@ const Login = () => {
             phone_number: userData.phone_number,
             fullname: userData.fullname,
             status: userData.status,
+            profile_image: userData.profile_image,
           })
         );
         dispatch(signInSuccess(userData.token));
@@ -143,6 +150,7 @@ const Login = () => {
                   className="w-12 h-12 text-center border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 text-lg font-medium shadow-sm"
                 />
               ))}
+
             </div>
             {!isOtpValid && (
               <p className="text-red-500 text-sm mt-2 text-center">

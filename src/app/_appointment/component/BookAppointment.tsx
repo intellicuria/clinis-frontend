@@ -103,6 +103,7 @@ const BookAppointment = () => {
               phone_number: response.data.phone_number,
               fullname: response.data.fullname,
               status: response.data.status,
+              profile_image: response.data.profile_image,
             })
           );
           dispatch(signInSuccess(response.data.token));
@@ -155,12 +156,13 @@ const BookAppointment = () => {
       </div>
 
       {/* Mobile Number / OTP Verification */}
-      <div className="flex flex-col space-y-4 max-w-full md:max-w-md mx-auto"> {/*This line is changed*/}
+      <div className="flex flex-col space-y-4 max-w-full md:max-w-md mx-auto">
+        {" "}
+        {/*This line is changed*/}
         <h2 className="text-lg font-semibold mb-2">Verify Your Number</h2>
         <label className="block text-sm text-gray-500 mb-1">
           {isOtpSent ? "Enter the OTP" : "Enter Your Mobile Number"}
         </label>
-
         {isOtpSent ? (
           <>
             <div className="flex space-x-2">
@@ -220,7 +222,6 @@ const BookAppointment = () => {
             </>
           </>
         )}
-
         {!isOtpSent && (
           <Button
             onClick={handleSendOtp}

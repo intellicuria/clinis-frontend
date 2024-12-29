@@ -43,8 +43,7 @@ export default function ProfilePage() {
     try {
       setLoading(true);
       const response = await getPatientProfile(userId);
-      const response1 = await getAppointments();
-      console.log(response1);
+      console.log(response);
       if (response?.status) {
         const profileData = response.data;
         dispatch(
@@ -53,6 +52,7 @@ export default function ProfilePage() {
             phone_number: profileData.phone_number,
             fullname: profileData.fullname,
             status: profileData.status,
+            profile_image: profileData.profile_image,
           })
         );
         setProfile({
@@ -62,7 +62,9 @@ export default function ProfilePage() {
           phone_number: profileData.phone_number || "",
           gender: profileData.gender || "",
           age: profileData.age || 0,
-          profile_image: profileData.profile_image || "/images/avatar.svg",
+          profile_image:
+            profileData.profile_image ||
+            "https://cdn-icons-png.flaticon.com/512/10337/10337609.png",
           medical_history: profileData.medical_history || [],
           allergies: profileData.allergies || [],
           height: profileData.height || 0,
@@ -145,11 +147,11 @@ export default function ProfilePage() {
       {/* Profile Header */}
       <header className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white p-8 rounded-xl shadow-lg mb-8">
         <div className="flex items-center gap-8">
-          <div className="relative w-28 h-28">
+          <div className="relative w-28 h-28 ">
             <Image
-              src={profile?.profile_image || "/images/avatar.svg"}
+              src={profile?.profile_image}
               alt="Profile"
-              className="rounded-full"
+              className="rounded-full bg-white"
               fill
               style={{ objectFit: "cover" }}
             />
